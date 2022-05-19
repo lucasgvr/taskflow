@@ -2,17 +2,23 @@
     height: 10vh;
     background: var(--grey);
 
-    div {
+    div.container {
         display: flex;
         flex-direction: row;
         height: 10vh;
+        margin: 0 2rem;
 
         div {
             flex: 1;
             display: flex;
             justify-content: space-between;
-            margin: 0 2rem;
             align-items: center;
+
+            h2 {
+                text-align: right;
+                font-size: 16px;
+                color: var(--text-body);
+            }
 
             .backButton {
                 text-decoration: none;
@@ -30,7 +36,7 @@
                 justify-content: center;
                 align-items: center;
                 border-radius: 4rem;
-                padding: 0.2rem 0.3rem 0.2rem 2rem;
+                padding: 0.2rem 0.3rem 0.2rem 0;
                 text-decoration: none;
                 transition: filter 0.2s;
 

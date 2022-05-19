@@ -2,14 +2,17 @@ import backArrowImg from "../../assets/arrow.svg"
 
 import "./styles.scss"
 
-export function Header() {
+export function Header({ title }) {
     return (
         <header id="header">
-            <div>
+            <div className="container">
                 <div>
                     <a className="backButton" href="/login">
                         <img src={ backArrowImg } alt="" />
                     </a>
+                    {title !== "" &&
+                        <h2>{ title }</h2>                    
+                    }
                     <a className="profile" href="/login">
                         <div>
                             <h2>Lucas Rocha</h2>
