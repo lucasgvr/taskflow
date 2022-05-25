@@ -1,22 +1,23 @@
-import firebase from "firebase/app";
-
-import "firebase/auth"
-import "firebase/database"
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "@firebase/firestore"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBIsKNVHTpUhwkwQRvLLDXLwcmIVVAK6Lk",
-  authDomain: "lucas-taskflow.firebaseapp.com",
-  databaseURL: "https://lucas-taskflow-default-rtdb.firebaseio.com",
-  projectId: "lucas-taskflow",
-  storageBucket: "lucas-taskflow.appspot.com",
-  messagingSenderId: "265302834370",
-  appId: "1:265302834370:web:ced0469938e0a55fd58f5b",
-  measurementId: "G-NX838FY43C"
+
+  apiKey: "AIzaSyBqXMKuC7ng3Qcao_u63iLL2KV1DBT0Bpo",
+
+  authDomain: "lucas-taskflow2.firebaseapp.com",
+
+  projectId: "lucas-taskflow2",
+
+  storageBucket: "lucas-taskflow2.appspot.com",
+
+  messagingSenderId: "697271071295",
+
+  appId: "1:697271071295:web:84ce3ee44962f8f29bbe8a"
+
 };
 
-firebase.initializeApp(firebaseConfig)
 
-const auth = firebase.auth()
-const database = firebase.database()
+const app = initializeApp(firebaseConfig)
 
-export { firebase, auth, database }
+export const db = getFirestore(app)

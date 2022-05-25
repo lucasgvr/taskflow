@@ -7,13 +7,13 @@ export function Header({ title }) {
         <header id="header">
             <div className="container">
                 <div>
-                    <a className="backButton" href="/login">
+                    <a className="backButton" href="/">
                         <img src={ backArrowImg } alt="" />
                     </a>
                     {title !== "" &&
                         <h2>{ title }</h2>                    
                     }
-                    <a className="profile" href="/login">
+                    <a className="profile" href="/profile">
                         <div>
                             <h2>Lucas Rocha</h2>
                             <h6>Ver Perfil</h6>

@@ -3,39 +3,16 @@ import { CardJob } from "../CardJob";
 
 import { Container, Background } from './styles'
 
+import { useTasks } from "../../hooks/useTasks";
+
 export function Dashboard() {
-    const data = [
-        {
-          id: 1,
-          title: 'Tarefa 1',
-          deadline: '10 horas',
-          status: "IN_PROGRESS"
-        },
-        {
-          id: 2,
-          title: 'Tarefa 2',
-          deadline: '6 dias para entrega',
-          status: "CLOSED"
-        },
-        {
-          id: 3,
-          title: 'Tarefa 3',
-          deadline: '10 horas',
-          status: "CLOSED"
-        },
-        {
-          id: 4,
-          title: 'Tarefa 4',
-          deadline: '10 horas',
-          status: "IN_PROGRESS"
-        }
-    ]
+    const { tasks } = useTasks()
 
     return (
         <Container>
             <HeaderDetails />
-            {data.map(item => (
-                <CardJob key={item.id} data={item} />
+            {tasks.map(task => (
+                <CardJob key={task.id} task={task} />
             ))}
             <Background />
         </Container>

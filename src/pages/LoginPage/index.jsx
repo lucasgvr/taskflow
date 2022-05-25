@@ -16,11 +16,11 @@ export function Login() {
     const [password, setPassword] = useState("")
 
     async function handleGoogleLogin() {
-        navigate("/")
+        navigate("/home")
     }
 
     async function handleLogin(event) {
-        navigate("/")
+        navigate("/home")
     }
 
     return (
