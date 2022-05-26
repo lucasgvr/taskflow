@@ -101,7 +101,7 @@
                 }
             }
 
-            form {
+            .form {
                 input {
                     height: 50px;
                     border-radius: 8px;
@@ -120,6 +120,23 @@
 
                 button, input {
                     width: 100%;
+                }
+            }
+
+            .createAccount {
+                font-style: 14px;
+                color: var(--orange);
+
+                margin: 32px 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                cursor: pointer;
+                transition: filter 0.2s;
+
+                &:hover {
+                    filter: brightness(0.9)
                 }
             }
         }

@@ -1,16 +1,11 @@
-import { useNavigate } from "react-router-dom"
-
 import { Button } from "../../components/Button/index"
 
 import illustrationImg from "../../assets/illustration.svg"
-import googleIconImg from "../../assets/google-icon.svg"
 import logInImg from "../../assets/log-in.svg"
 
-import "./styles.scss"
+import "../LoginPage/styles.scss"
 
-export function LoginPage() {
-    const navigate = useNavigate()
-
+export function CreateAccountPage() {
     return (
         <div id="pageAuth">
             <aside>
@@ -21,11 +16,7 @@ export function LoginPage() {
 
             <main>
                 <div className="mainContent">
-                    <button onClick={() => navigate("/home")} className="googleLogin">
-                        <img src={ googleIconImg } alt="Logo do Google" />
-                        Entre na sua conta com o Google
-                    </button>
-                    <div className="separator">ou entre com email e senha</div>
+                    <div className="separator">Cadastre sua conta com email e senha</div>
                     <div className="form">
                         <input
                             type="email"
@@ -35,12 +26,11 @@ export function LoginPage() {
                             type="password"
                             placeholder="Senha"
                         />
-                        <Button onClick={() => navigate("/home")}>
+                        <Button>
                             <img src={ logInImg } alt="Log In Icon" />
-                            Entrar
+                            Criar conta
                         </Button>
                     </div>
-                    <div onClick={() => navigate("/account/create")} className="createAccount">Ainda não tem uma conta? Crie agora!</div>
                 </div>
             </main>
         </div>

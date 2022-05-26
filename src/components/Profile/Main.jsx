@@ -23,7 +23,7 @@ export function Main() {
                                 padding='0.75rem 1.5rem' 
                                 width='100%' 
                                 color='#5A5A66' 
-                                value='Lucas' 
+                                defaultValue='Lucas' 
                             />
                         </Box>
                         <Box as='div' display='flex' mt='1.5rem'>
@@ -41,7 +41,7 @@ export function Main() {
                                     width='100%' 
                                     color='#5A5A66' 
                                     mt='1rem' 
-                                    value='lucas.voriarocha@gmail.com'
+                                    defaultValue='lucas.voriarocha@gmail.com'
                                 />
                             </Box>
                             <Box as='div' ml='1.5rem'>
@@ -58,7 +58,7 @@ export function Main() {
                                     width='100%' 
                                     color='#5A5A66' 
                                     mt='1rem' 
-                                    value ='(43) 99922-1392'
+                                    defaultValue ='(43) 99922-1392'
                                 />
                             </Box>
                         </Box>
