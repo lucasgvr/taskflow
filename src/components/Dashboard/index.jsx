@@ -1,9 +1,9 @@
 import { HeaderDetails } from "../HeaderDetails";
 import { CardJob } from "../CardJob";
 
-import { Container, Background } from './styles'
+import { useTasks } from "../../hooks/useTasks"
 
-import { useTasks } from "../../hooks/useTasks";
+import { Container, Background } from './styles'
 
 export function Dashboard() {
     const { tasks } = useTasks()

@@ -1,6 +1,6 @@
-import styled from 'styled-components';
+import styled from 'styled-components'
 
-export const Container = styled.div``;
+export const Container = styled.div``
 
 export const Background = styled.div`
   position: absolute;
@@ -9,6 +9,5 @@ export const Background = styled.div`
   left: 0px;
   top: 0px;
   z-index: -10;
-
   background: #41414C;
-`;
+`
