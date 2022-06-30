@@ -35,6 +35,13 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 - FireBase
 
 
+## Começando
+
+### Instalação
+
+Para instalar o projeto deve-se executar o comando "yarn" ou "npm install" para instalação de dependências. É necessário criar um projeto no FireBase e adiconar as suas API Keys ao arquivo .env.local
+
+
 ## :iphone: Suporte Ou Contato
 
 [![Instagram Badge](https://img.shields.io/badge/Instagram-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/lucasgvr/)
