@@ -7,7 +7,7 @@ conclusão de cada tarefa. Além disso, é possível atribuir uma tarefa à uma 
 ou setor específico dentro da empresa. Os funcionários também podem adicionar
 comentários dentro das tarefas e alterar o status de "Em Andamento" para "Encerrado".
 
-<p align="center">
+<p align="center" width="20rem">
  <img src="https://i.imgur.com/9pnlrzo.png" />
 </p>
 
