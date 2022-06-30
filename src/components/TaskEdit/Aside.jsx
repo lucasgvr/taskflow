@@ -12,7 +12,7 @@ import { Box, Image, Text } from "@chakra-ui/react"
 import { Button } from "../Button"
 
 import TrashImg from "../../assets/trash-24.svg"
-import MoneyColorImg from "../../assets/money-color.svg"
+import MoneyColorImg from "../../assets/edit-24.svg"
 
 import "../../styles/modal.scss"
 
@@ -31,7 +31,7 @@ export function Aside({ updateTask, taskId, newDescription, newDeadline, newStat
 
     return (
         <Box as='aside' backgroundColor='#FCFDFF' borderRadius='0.313rem' border='1px solid #E1E3E6' color='#5A5A66' width='22rem' ml='8rem' textAlign='center' padding='2.5rem 3.375rem' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
-            <Image src={ MoneyColorImg } alt='Dinheiro' mb='1.5rem' />
+            <Image src={ MoneyColorImg } alt='Dinheiro' mb='1.5rem' height='4rem' width='4rem' />
             <Text mb='1.75rem' fontWeight='600' fontSize='0.875rem' lineHeight='1.625rem'></Text>
             <Box 
                 as='div' 
