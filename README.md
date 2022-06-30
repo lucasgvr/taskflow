@@ -21,7 +21,7 @@ no Figma para acessá-lo.
 
 Para ver o desenvolvimento acesse:
 
-[![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/COMP4026-ENSW2026/atividade-config-01-grupo-do-juantavares)
+[![Github](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/lucasgvr/taskflow)
 
 
 ## 🚀 Tecnologias
