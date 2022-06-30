@@ -7,6 +7,11 @@ conclusão de cada tarefa. Além disso, é possível atribuir uma tarefa à uma 
 ou setor específico dentro da empresa. Os funcionários também podem adicionar
 comentários dentro das tarefas e alterar o status de "Em Andamento" para "Encerrado".
 
+<p align="center">
+ <img src="<blockquote class="imgur-embed-pub" lang="en" data-id="a/RGSycAH" data-context="false" ><a href="//imgur.com/a/RGSycAH"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>" />
+</p>
+
+
 # Layout
 
 Você pode visualizar o layout do projeto através <a href="https://www.figma.com/file/cmfQPgBt8CDLvne5FKysO8/TaskFlow?node-id=1%3A2">desse link</a>. É necessário ter conta 
