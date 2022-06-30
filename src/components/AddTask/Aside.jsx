@@ -1,6 +1,5 @@
 import { Box, Image, Text } from "@chakra-ui/react"
 
-import MoneyGrayImg from "../../assets/money-gray.svg"
 import TrashImg from "../../assets/trash-24.svg"
 
 export function Aside({ addTask }) {
