@@ -8,7 +8,7 @@ ou setor específico dentro da empresa. Os funcionários também podem adicionar
 comentários dentro das tarefas e alterar o status de "Em Andamento" para "Encerrado".
 
 <p align="center">
- <img src="[/src/assets/taskflow-Home.png](https://i.imgur.com/9pnlrzo.png)" />
+ <img src="https://i.imgur.com/9pnlrzo.png" />
 </p>
 
 
