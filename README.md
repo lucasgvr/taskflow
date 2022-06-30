@@ -8,7 +8,7 @@ ou setor específico dentro da empresa. Os funcionários também podem adicionar
 comentários dentro das tarefas e alterar o status de "Em Andamento" para "Encerrado".
 
 <p align="center">
- <img src="imgur.com/a/RGSycAH" />
+ <img src="https://imgur.com/a/RGSycAH" />
 </p>
 
 
