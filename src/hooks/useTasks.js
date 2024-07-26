@@ -10,9 +10,9 @@ export function useTasks() {
 
     useEffect(() => {
         const getTasks = async () => {
-        const data = await getDocs(tasksCollectionRef)
+            const data = await getDocs(tasksCollectionRef)
 
-        setTasks(data.docs.map((doc) => ({...doc.data(), id: doc.id})))
+            setTasks(data.docs.map((doc) => ({...doc.data(), id: doc.id})))
         }
 
         getTasks()

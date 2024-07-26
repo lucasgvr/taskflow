@@ -1,5 +1,12 @@
 import backArrowImg from "../../assets/arrow.svg"
 
+import { Button } from '../Button/index'
+
+import { Box, Text } from '@chakra-ui/react'
+
+import { Link } from "react-router-dom";
+
+
 import "./styles.scss"
 
 export function Header() {
@@ -7,9 +14,18 @@ export function Header() {
         <header id="header">
             <div className="container">
                 <div>
-                    <a className="backButton" href="/">
-                        <img src={ backArrowImg } alt="" />
-                    </a>
+                    <div className="buttonContainer">
+                        <a className="backButton" href="/">
+                            <img src={ backArrowImg } alt="" />
+                        </a>
+                        <Link to='/employees'>
+                        <Button>
+                            <Box display='flex' justifyContent='center' alignItems='center'>
+                                <Text>Departamentos/Funcionários</Text>
+                            </Box>
+                        </Button>
+                        </Link>
+                    </div>
                     <a className="profile" href="/profile">
                         <div>
                             <h2>Lucas Rocha</h2>

@@ -6,6 +6,7 @@ import { TaskEditPage } from "./pages/TaskEditPage/index";
 import { ProfilePage } from "./pages/ProfilePage";
 import { AddTaskPage } from "./pages/AddTaskPage";
 import { CreateAccountPage } from "./pages/CreateAccountPage";
+import { EmployeesPage } from "./pages/EmployeesPage";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                 <Route exact path="/profile" element={ <ProfilePage /> } />
                 <Route exact path="/add" element={ <AddTaskPage /> } />
                 <Route exact path="/account/create" element={ <CreateAccountPage /> } />
+                <Route exact path="/employees" element={ <EmployeesPage /> } />
             </Routes>
         </BrowserRouter>
     )
