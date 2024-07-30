@@ -18,12 +18,12 @@ export function Header() {
                         <a className="backButton" href="/">
                             <img src={ backArrowImg } alt="" />
                         </a>
-                        <Link to='/employees'>
-                        <Button>
-                            <Box display='flex' justifyContent='center' alignItems='center'>
-                                <Text>Departamentos/Funcionários</Text>
-                            </Box>
-                        </Button>
+                        <Link to='/choose'>
+                            <Button>
+                                <Box display='flex' justifyContent='center' alignItems='center'>
+                                    <Text>Departamentos/Funcionários</Text>
+                                </Box>
+                            </Button>
                         </Link>
                     </div>
                     <a className="profile" href="/profile">
