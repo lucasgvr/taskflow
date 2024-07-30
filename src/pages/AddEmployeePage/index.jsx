@@ -14,7 +14,11 @@ import { useDepartments } from "../../hooks/useDepartments";
 import { db } from "../../services/firebase"
 import { collection, getDocs, doc, addDoc } from "firebase/firestore"
 
+import { useNavigate } from "react-router-dom";
+
 export function AddEmployeePage() {
+    const navigate = useNavigate();
+
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
@@ -42,9 +46,10 @@ export function AddEmployeePage() {
                 image: '' // Store the reference
             });
             
-            console.log('User added successfully');
+            console.log('User added successfully')
+            navigate('/employees')
         } catch (error) {
-            console.error('Error adding user:', error);
+            console.error('Error adding user:', error)
         }
     }
 
@@ -181,7 +186,6 @@ export function AddEmployeePage() {
                                             <option key={department.id} value={department.id}>{department.name}</option>
                                         ))}
                                     </Select>
-                                    <h1>{department}</h1>
                                 </Box>
                             </Box>
                         </Box>

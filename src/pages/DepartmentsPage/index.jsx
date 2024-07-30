@@ -12,6 +12,11 @@ import { collection, getDocs, getDoc, doc } from "firebase/firestore"
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 
+import { MdModeEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+
+import './styles.scss'
+
 
 export function DepartmentsPage() {
     const { departments } = useDepartments()
@@ -19,8 +24,8 @@ export function DepartmentsPage() {
     return (
         <>
             <Header />
-            <div>
-                <Link to='/departments/new'>
+            <div className="departmentsPage">
+                <Link to='/departments/new' className="addDepartment">
                     <Button>
                         <Box display='flex' justifyContent='center' alignItems='center'>
                             <Text>Adicionar departamento</Text>
@@ -28,7 +33,7 @@ export function DepartmentsPage() {
                     </Button>
                 </Link>
 
-                <div>
+                <div className="departmentListContainer">
                     <h1>Departamentos</h1>
 
                     <table>
@@ -42,10 +47,9 @@ export function DepartmentsPage() {
                             {departments.map((department) => (
                                 <tr key={department.id}>
                                     <td>{department.name}</td>
-                                    <td>
-                                        <button>Edit</button> 
-                                        <button>Delete</button> 
-                                        <button>Employees</button> 
+                                    <td className="actions"> 
+                                        <MdModeEdit size={24}>Edit</MdModeEdit> 
+                                        <MdDelete size={24}>Delete</MdDelete> 
                                     </td>
                                 </tr>
                             ))}

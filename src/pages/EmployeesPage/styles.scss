@@ -1,0 +1,67 @@
+.employeesPage {
+    position: relative;
+    padding: 2rem;
+  
+    .addEmployee {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        text-decoration: none;
+
+        button {
+            div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+    
+            p {
+                font-size: 1rem;
+            }
+        }
+    }
+  
+    .employeeListContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 5rem;
+        
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 2rem;
+
+            font-weight: 600;
+            line-height: 2.5rem;
+            color: #5a5a66;
+        }
+    
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            text-align: left;
+    
+            th, td {
+                padding: 1rem;
+                border: 1px solid #ddd;
+            }
+    
+            th {
+                background-color: #f2f2f2;
+            }
+
+            .actions {
+                display: flex;
+                justify-content: space-around;
+
+                svg {
+                    cursor: pointer;
+
+                    &:hover {
+                        filter: brightness(0.8);
+                    }
+                }
+            }
+        }
+    }
+}

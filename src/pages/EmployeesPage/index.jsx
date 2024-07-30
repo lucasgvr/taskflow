@@ -12,6 +12,10 @@ import { collection, getDocs, getDoc, doc } from "firebase/firestore"
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 
+import { MdModeEdit } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+
+import './styles.scss'
 
 export function EmployeesPage() {
     const { employees } = useEmployees()
@@ -63,8 +67,8 @@ export function EmployeesPage() {
     return (
         <>
             <Header />
-            <div>
-                <Link to='/employees/new'>
+            <div className="employeesPage">
+                <Link to='/employees/new' className="addEmployee">
                     <Button>
                         <Box display='flex' justifyContent='center' alignItems='center'>
                             <Text>Adicionar funcionário</Text>
@@ -72,7 +76,7 @@ export function EmployeesPage() {
                     </Button>
                 </Link>
 
-                <div>
+                <div className="employeeListContainer">
                     <h1>Funcionários</h1>
 
                     <table>
@@ -98,9 +102,9 @@ export function EmployeesPage() {
                                     <td>{employee.cpf}</td>
                                     <td>{departments[employee.id]}</td>
                                     <td>{employee.password}</td>
-                                    <td>
-                                        <Link to={`/employees/${employee.id}`}><button>Edit</button></Link>
-                                        <button>Delete</button>
+                                    <td className="actions">
+                                        <Link to={`/employees/${employee.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
+                                        <MdDelete size={24}>Delete</MdDelete>
                                     </td>
                                 </tr>
                             ))}

@@ -14,7 +14,11 @@ import { useDepartments } from "../../hooks/useDepartments";
 import { db } from "../../services/firebase"
 import { collection, getDocs, doc, addDoc } from "firebase/firestore"
 
+import { useNavigate } from "react-router-dom";
+
 export function AddDepartmentPage() {
+    const navigate = useNavigate();
+
     const [name, setName] = useState('')
 
     const { departments } = useDepartments()
@@ -28,6 +32,7 @@ export function AddDepartmentPage() {
             })
             
             console.log('Department added successfully');
+            navigate('/departments')
         } catch (error) {
             console.error('Error adding department:', error);
         }
