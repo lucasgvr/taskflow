@@ -1,14 +1,9 @@
-import { useEmployees } from "../../hooks/useEmployees"
 import { useDepartments } from "../../hooks/useDepartments"
 
 import { Link } from "react-router-dom";
 
 import { Box, Text } from '@chakra-ui/react'
 
-import React, { useEffect, useState } from 'react'
-
-import { db } from "../../services/firebase"
-import { collection, getDocs, getDoc, doc } from "firebase/firestore"
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 

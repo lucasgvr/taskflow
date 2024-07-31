@@ -12,7 +12,7 @@ import { Box, Text, Input} from "@chakra-ui/react"
 import { useDepartments } from "../../hooks/useDepartments";
 
 import { db } from "../../services/firebase"
-import { collection, getDocs, doc, addDoc } from "firebase/firestore"
+import { collection, doc, addDoc } from "firebase/firestore"
 
 import { useNavigate } from "react-router-dom";
 
@@ -39,11 +39,11 @@ export function AddEmployeePage() {
                 firstName,
                 lastName,
                 email,
-                password, // Consider hashing passwords in production
+                password, 
                 cpf,
                 phone,
                 department: departmentRef,
-                image: '' // Store the reference
+                image: '' 
             });
             
             console.log('User added successfully')
@@ -56,10 +56,10 @@ export function AddEmployeePage() {
     return (
         <>
             <Header />
+
             <Box as='main'>
                 <Box as='div'>
-                    <Box as='form' marginLeft='4rem' gap='2rem' display='flex'
-                    flexDirection='column' alignItems='center' justifyContent='center' onSubmit={handleAddEmployee}>
+                    <Box as='form' marginLeft='4rem' gap='2rem' display='flex' flexDirection='column' alignItems='center' justifyContent='center' onSubmit={handleAddEmployee}>
                         <Box as='fieldset' border='none' mt='3.5rem'>
                             <Text color='#5A5A66' fontWeight='600' fontSize='2rem' lineHeight='2.625rem'>
                                 Adicionar Funcionário
@@ -67,8 +67,8 @@ export function AddEmployeePage() {
 
                             <Box as='div' height='1px' margin='1rem 0 2rem' backgroundColor='#E1E3E5'></Box>
 
-                            <Box as='div' display='flex' mt='1.5rem'>
-                                <Box as='div'>
+                            <Box as='div' display='flex' flexDirection='row' gap='1.5rem' mt='1.5rem'>
+                                <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         Nome
                                     </Box>
@@ -76,7 +76,7 @@ export function AddEmployeePage() {
                                         type='text' 
                                         fontWeight='500' 
                                         backgroundColor='#FCFDFF' 
-                                        border='1px solid #E1E3E6'
+                                        border='1px solid #E1E3E6' 
                                         borderRadius='0.313rem' 
                                         padding='0.5rem 1.5rem' 
                                         width='100%' 
@@ -85,7 +85,8 @@ export function AddEmployeePage() {
                                         onChange={event => setFirstName(event.target.value)}
                                     />
                                 </Box>
-                                <Box as='div' ml='1.5rem'>
+                                
+                                <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         Sobrenome
                                     </Box>
@@ -103,8 +104,9 @@ export function AddEmployeePage() {
                                     />
                                 </Box>
                             </Box>
-                            <Box as='div' display='flex' mt='1.5rem'>
-                                <Box as='div'>
+
+                            <Box as='div' display='flex' flexDirection='row' gap='1.5rem' mt='1.5rem'>
+                                <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         Email
                                     </Box>
@@ -112,21 +114,21 @@ export function AddEmployeePage() {
                                         type='text' 
                                         fontWeight='500' 
                                         backgroundColor='#FCFDFF' 
-                                        border='1px solid #E1E3E6'
+                                        border='1px solid #E1E3E6' 
                                         borderRadius='0.313rem' 
                                         padding='0.5rem 1.5rem' 
                                         width='100%' 
                                         color='#5A5A66' 
                                         mt='1rem' 
                                         onChange={event => setEmail(event.target.value)}
-                                    />
+                                        />
                                 </Box>
-                                <Box as='div' ml='1.5rem'>
+                                <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         Senha
                                     </Box>
                                     <Input 
-                                        type='text' 
+                                        type='password' 
                                         fontWeight='500' 
                                         backgroundColor='#FCFDFF' 
                                         border='1px solid #E1E3E6' 
@@ -139,8 +141,9 @@ export function AddEmployeePage() {
                                     />
                                 </Box>
                             </Box>
-                            <Box as='div' display='flex' mt='1.5rem'>
-                                <Box as='div'>
+
+                            <Box as='div' display='flex' flexDirection='row' gap='1.5rem' mt='1.5rem'>
+                                <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         CPF
                                     </Box>
@@ -148,7 +151,7 @@ export function AddEmployeePage() {
                                         type='text' 
                                         fontWeight='500' 
                                         backgroundColor='#FCFDFF' 
-                                        border='1px solid #E1E3E6'
+                                        border='1px solid #E1E3E6' 
                                         borderRadius='0.313rem' 
                                         padding='0.5rem 1.5rem' 
                                         width='100%' 
@@ -157,7 +160,7 @@ export function AddEmployeePage() {
                                         onChange={event => setCpf(event.target.value)}
                                     />
                                 </Box>
-                                <Box as='div' ml='1.5rem'>
+                            <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         Telefone
                                     </Box>
@@ -176,33 +179,42 @@ export function AddEmployeePage() {
                                 </Box>
                             </Box>
 
-                            <Box as='div' display='flex' mt='1.5rem'>
-                                <Box as='div'>
-                                    <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
-                                        Departamento
-                                    </Box>
-                                    <Select placeholder='Select option' onChange={event => setDepartment(event.target.value)}>
-                                        {departments.map(department => (
-                                            <option key={department.id} value={department.id}>{department.name}</option>
-                                        ))}
-                                    </Select>
+                            <Box as='div' mt='1.5rem'>
+                                <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
+                                    Departamento
                                 </Box>
+                                <Select 
+                                    placeholder='Selecionar Departamento' 
+                                    width='100%' 
+                                    backgroundColor='#FCFDFF' 
+                                    border='1px solid #E1E3E6' 
+                                    borderRadius='0.313rem' 
+                                    color='#5A5A66' 
+                                    mt='1rem' 
+                                    onChange={event => setDepartment(event.target.value)}
+                                >
+                                    {departments.map(department => (
+                                    <option key={department.id} value={department.id}>{department.name}</option>
+                                    ))}
+                                </Select>
                             </Box>
                         </Box>
 
-                        <Button>
-                            <Box display='flex' justifyContent='center' alignItems='center' width='35rem'>
-                                <Text>Adicionar funcionário</Text>
-                            </Box>
-                        </Button>
-
-                        <Link to='/employees'>
-                            <Button isOutlined>
+                        <Box display='flex' flexDirection='column' gap='1rem' mt='2rem'>
+                            <Button>
                                 <Box display='flex' justifyContent='center' alignItems='center' width='35rem'>
-                                    <Text>Listar Funcionários</Text>
+                                    <Text>Adicionar funcionário</Text>
                                 </Box>
                             </Button>
-                        </Link>
+
+                            <Link to='/employees'>
+                                <Button isOutlined>
+                                    <Box display='flex' justifyContent='center' alignItems='center' width='38rem'>
+                                        <Text>Listar Funcionários</Text>
+                                    </Box>
+                                </Button>
+                            </Link>
+                        </Box>
                     </Box>
                 </Box>
             </Box>

@@ -1,23 +1,27 @@
 import { useEmployees } from "../../hooks/useEmployees"
-import { useDepartments } from "../../hooks/useDepartments"
 
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"
 
 import { Box, Text } from '@chakra-ui/react'
 
 import React, { useEffect, useState } from 'react'
 
 import { db } from "../../services/firebase"
-import { collection, getDocs, getDoc, doc } from "firebase/firestore"
+import { getDoc, doc } from "firebase/firestore"
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 
-import { MdModeEdit } from "react-icons/md";
-import { MdDelete } from "react-icons/md";
+import { MdModeEdit } from "react-icons/md"
+import { MdDelete } from "react-icons/md"
+import { FaTrashAlt } from "react-icons/fa";
 
 import './styles.scss'
 
+import Modal from 'react-modal'
+
 export function EmployeesPage() {
+    Modal.setAppElement('#root');
+
     const { employees } = useEmployees()
 
     const [departments, setDepartments] = useState({})
@@ -42,7 +46,7 @@ export function EmployeesPage() {
         }
 
         fetchDepartments()
-    }, [employees])
+    })
 
     async function getDepartmentOfEmployee(employeeId) {
         const employeeDocRef = doc(db, 'employees', employeeId)
@@ -64,6 +68,15 @@ export function EmployeesPage() {
         }
     }
 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
+    const confirmDelete = () => {
+        console.log('Employee deleted');
+        closeModal();
+    };
+
     return (
         <>
             <Header />
@@ -82,14 +95,14 @@ export function EmployeesPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th>First Name</th>
-                                <th>Last Name</th>
+                                <th>Nome</th>
+                                <th>Sobrenome</th>
                                 <th>Email</th>
-                                <th>Phone</th>
+                                <th>Telefone</th>
                                 <th>CPF</th>
-                                <th>Department</th>
-                                <th>Password</th>
-                                <th>Actions</th> 
+                                <th>Departamento</th>
+                                <th>Senha</th>
+                                <th>Opções</th> 
                             </tr>
                         </thead>
                         <tbody>
@@ -104,7 +117,7 @@ export function EmployeesPage() {
                                     <td>{employee.password}</td>
                                     <td className="actions">
                                         <Link to={`/employees/${employee.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
-                                        <MdDelete size={24}>Delete</MdDelete>
+                                        <MdDelete size={24} onClick={openModal}>Delete</MdDelete>
                                     </td>
                                 </tr>
                             ))}
@@ -112,6 +125,45 @@ export function EmployeesPage() {
                     </table>
                 </div>
             </div>
+
+            <Modal
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
+                contentLabel="Delete Confirmation"
+                style={{
+                    content: {
+                        top: '50%',
+                        left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
+                        marginRight: '-50%',
+                        transform: 'translate(-50%, -50%)',
+                        padding: '4rem',
+                        borderRadius: '12px',
+                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+                        backgroundColor: '#fff',
+                        border: 'none',
+                    },
+                    overlay: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    },
+                }}
+                >
+                <Box display="flex" alignItems="center" justifyContent="center" mb="1rem">
+                    <FaTrashAlt size="2rem" color="var(--orange)" />
+                </Box>
+                <Text fontWeight="bold" mb="1rem" textAlign="center">
+                    Tem certeza que deseja excluir este funcionário?
+                </Text>
+                <Box display="flex" justifyContent="space-around">
+                    <Button isOutlined onClick={confirmDelete}>
+                        Sim, excluir
+                    </Button>
+                    <Button onClick={closeModal}>
+                        Cancelar
+                    </Button>
+                </Box>
+            </Modal>
         </>
     )
 }         

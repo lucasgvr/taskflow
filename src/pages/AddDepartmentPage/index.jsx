@@ -1,18 +1,14 @@
 import { Button } from "../../components/Button";
 import { Header } from "../../components/Header";
 
-import { Select } from '@chakra-ui/react'
-
 import { useState } from "react";
 
 import { Link } from "react-router-dom";
 
 import { Box, Text, Input} from "@chakra-ui/react"
 
-import { useDepartments } from "../../hooks/useDepartments";
-
 import { db } from "../../services/firebase"
-import { collection, getDocs, doc, addDoc } from "firebase/firestore"
+import { collection, addDoc } from "firebase/firestore"
 
 import { useNavigate } from "react-router-dom";
 
@@ -21,9 +17,7 @@ export function AddDepartmentPage() {
 
     const [name, setName] = useState('')
 
-    const { departments } = useDepartments()
-
-    async function handleAddEmployee(event) {
+    async function handleAddDepartment(event) {
         event.preventDefault()
 
         try {
@@ -41,10 +35,11 @@ export function AddDepartmentPage() {
     return (
         <>
             <Header />
+            
             <Box as='main'>
                 <Box as='div'>
                     <Box as='form' marginLeft='4rem' gap='2rem' display='flex'
-                    flexDirection='column' alignItems='center' justifyContent='center' onSubmit={handleAddEmployee}>
+                    flexDirection='column' alignItems='center' justifyContent='center' onSubmit={handleAddDepartment}>
                         <Box as='fieldset' border='none' mt='3.5rem'>
                             <Text color='#5A5A66' fontWeight='600' fontSize='2rem' lineHeight='2.625rem'>
                                 Adicionar Departamento
@@ -52,8 +47,8 @@ export function AddDepartmentPage() {
 
                             <Box as='div' height='1px' margin='1rem 0 2rem' backgroundColor='#E1E3E5'></Box>
 
-                            <Box as='div' display='flex' mt='1.5rem'>
-                                <Box as='div'>
+                            <Box as='div' display='flex' flexDirection='row' gap='1.5rem' mt='1.5rem'>
+                                <Box as='div' flex='1'>
                                     <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                         Nome
                                     </Box>
@@ -71,22 +66,23 @@ export function AddDepartmentPage() {
                                     />
                                 </Box>
                             </Box>
-
                         </Box>
 
-                        <Button>
-                            <Box display='flex' justifyContent='center' alignItems='center' width='35rem'>
-                                <Text>Adicionar Departamento</Text>
-                            </Box>
-                        </Button>
-
-                        <Link to='/departments'>
-                            <Button isOutlined>
-                                <Box display='flex' justifyContent='center' alignItems='center' width='35rem'>
-                                    <Text>Listar Departamentos</Text>
+                        <Box display='flex' flexDirection='column' gap='1rem' mt='2rem'>
+                            <Button>
+                                <Box display='flex' justifyContent='center' alignItems='center' width='20rem'>
+                                    <Text>Adicionar Departamento</Text>
                                 </Box>
                             </Button>
-                        </Link>
+
+                            <Link to='/departments'>
+                                <Button isOutlined>
+                                    <Box display='flex' justifyContent='center' alignItems='center' width='20rem'>
+                                        <Text>Listar Departamentos</Text>
+                                    </Box>
+                                </Button>
+                            </Link>
+                        </Box>
                     </Box>
                 </Box>
             </Box>

@@ -7,13 +7,14 @@ import logInImg from "../../assets/log-in.svg"
 import backArrowImg from "../../assets/arrow.svg"
 
 import "../LoginPage/styles.scss"
+import { Link } from "react-router-dom"
 
 export function CreateAccountPage() {
     return (
         <div id="pageAuth">
-            <a href="/">
+            <Link to="/">
                 <Image src={ backArrowImg }height='2rem' position='absolute' top='1rem' left='1rem' />
-            </a>
+            </Link>
             <aside>
                 <img src={ illustrationImg } alt="Ilustração simbolizando perguntas e respostas" />
                 <strong>Sua gestão pode ser melhor.</strong>

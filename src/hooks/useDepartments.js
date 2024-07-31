@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 import { db } from "../services/firebase"
-import { collection, getDocs, getDoc, doc } from "firebase/firestore"
+import { collection, getDocs } from "firebase/firestore"
 
 export function useDepartments() {
     const [departments, setDepartments] = useState([])
