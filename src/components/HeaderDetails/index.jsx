@@ -3,7 +3,9 @@ import { useTasks } from "../../hooks/useTasks"
 import { Box, Image, Text } from '@chakra-ui/react'
 
 import { Button } from '../Button/index'
-import { Container, InfoWrapper, ButtonWrapper, InfoItem, Title, SubTitle } from './styles'
+import { Container, InfoWrapper, InfoItem, Title, SubTitle } from './styles'
+
+import { Link } from "react-router-dom"
 
 import PlusIcon from "../../assets/plus-24.svg"
 
@@ -42,14 +44,14 @@ export function HeaderDetails() {
                     <SubTitle>Encerradas</SubTitle>
                 </InfoItem>
             </InfoWrapper>
-            <ButtonWrapper as='a' href='/add'>
+            <Link as='a' to='/add'>
                 <Button>
                     <Box display='flex' justifyContent='center' alignItems='center'>
                         <Image src={ PlusIcon } alt="" />
                         <Text>Adicionar nova tarefa</Text>
                     </Box>
                 </Button>
-            </ButtonWrapper>
+            </Link>
         </Container>
     )
 }

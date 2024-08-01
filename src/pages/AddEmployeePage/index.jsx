@@ -12,7 +12,7 @@ import { Box, Text, Input} from "@chakra-ui/react"
 import { useDepartments } from "../../hooks/useDepartments";
 
 import { db } from "../../services/firebase"
-import { collection, doc, addDoc } from "firebase/firestore"
+import { collection, doc, addDoc, updateDoc, arrayUnion } from "firebase/firestore"
 
 import { useNavigate } from "react-router-dom";
 
@@ -35,7 +35,7 @@ export function AddEmployeePage() {
         try {
             const departmentRef = doc(db, 'departments', department)
             
-            await addDoc(collection(db, 'employees'), {
+            const employeeRef = await addDoc(collection(db, 'employees'), {
                 firstName,
                 lastName,
                 email,
@@ -45,6 +45,10 @@ export function AddEmployeePage() {
                 department: departmentRef,
                 image: '' 
             });
+
+            await updateDoc(departmentRef, {
+                employees: arrayUnion(employeeRef)
+            }); 
             
             console.log('User added successfully')
             navigate('/employees')

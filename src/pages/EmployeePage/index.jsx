@@ -22,7 +22,7 @@ export function EmployeePage() {
 
   useEffect(() => {
     fetchEmployee();
-  });
+  } )
 
   const fetchEmployee = async () => {
     try {

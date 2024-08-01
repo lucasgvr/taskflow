@@ -7,7 +7,7 @@ import { Box, Text } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 
 import { db } from "../../services/firebase"
-import { getDoc, doc } from "firebase/firestore"
+import { getDoc, doc, deleteDoc, updateDoc, arrayRemove } from "firebase/firestore"
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 
@@ -46,7 +46,7 @@ export function EmployeesPage() {
         }
 
         fetchDepartments()
-    })
+    }, [employees])
 
     async function getDepartmentOfEmployee(employeeId) {
         const employeeDocRef = doc(db, 'employees', employeeId)
@@ -69,13 +69,50 @@ export function EmployeesPage() {
     }
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-    const openModal = () => setModalIsOpen(true);
-    const closeModal = () => setModalIsOpen(false);
-    const confirmDelete = () => {
-        console.log('Employee deleted');
-        closeModal();
+    const openModal = (employeeId) => {
+        setSelectedEmployee(employeeId);
+        setModalIsOpen(true);
     };
+    
+    const closeModal = () => {
+        setModalIsOpen(false);
+        setSelectedEmployee(null);
+    };
+
+    const handleDeleteEmployee = async () => {
+        if (selectedEmployee) {
+            try {
+                // Reference to the employee document
+                const docRef = doc(db, 'employees', selectedEmployee);
+    
+                // Fetch the employee document to get the department reference
+                const employeeDoc = await getDoc(docRef);
+                if (employeeDoc.exists()) {
+                    const employeeData = employeeDoc.data();
+                    const departmentRef = employeeData.department;
+    
+                    // Remove the employee reference from the department's employees array
+                    if (departmentRef) {
+                        await updateDoc(departmentRef, {
+                            employees: arrayRemove(docRef)
+                        });
+                    }
+    
+                    // Delete the employee document
+                    await deleteDoc(docRef);
+                    console.log('Employee deleted');
+                } else {
+                    console.error('No such employee found!');
+                }
+            } catch (error) {
+                console.error('Error removing employee: ', error);
+            } finally {
+                closeModal();
+            }
+        }
+    }
 
     return (
         <>
@@ -113,11 +150,11 @@ export function EmployeesPage() {
                                     <td>{employee.email}</td>
                                     <td>{employee.phone}</td>
                                     <td>{employee.cpf}</td>
-                                    <td>{departments[employee.id]}</td>
+                                    <td>{departments[employee.id] ? departments[employee.id] : 'Carregando...'}</td>
                                     <td>{employee.password}</td>
                                     <td className="actions">
                                         <Link to={`/employees/${employee.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
-                                        <MdDelete size={24} onClick={openModal}>Delete</MdDelete>
+                                        <MdDelete size={24} onClick={() => openModal(employee.id)}>Delete</MdDelete>
                                     </td>
                                 </tr>
                             ))}
@@ -128,41 +165,24 @@ export function EmployeesPage() {
 
             <Modal
                 isOpen={modalIsOpen}
+                className="deleteEmployeeModal"
                 onRequestClose={closeModal}
-                contentLabel="Delete Confirmation"
-                style={{
-                    content: {
-                        top: '50%',
-                        left: '50%',
-                        right: 'auto',
-                        bottom: 'auto',
-                        marginRight: '-50%',
-                        transform: 'translate(-50%, -50%)',
-                        padding: '4rem',
-                        borderRadius: '12px',
-                        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
-                        backgroundColor: '#fff',
-                        border: 'none',
-                    },
-                    overlay: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    },
-                }}
-                >
-                <Box display="flex" alignItems="center" justifyContent="center" mb="1rem">
-                    <FaTrashAlt size="2rem" color="var(--orange)" />
-                </Box>
-                <Text fontWeight="bold" mb="1rem" textAlign="center">
-                    Tem certeza que deseja excluir este funcionário?
-                </Text>
-                <Box display="flex" justifyContent="space-around">
-                    <Button isOutlined onClick={confirmDelete}>
-                        Sim, excluir
-                    </Button>
-                    <Button onClick={closeModal}>
-                        Cancelar
-                    </Button>
-                </Box>
+
+            >
+                <div className="modalWrapper">
+                    <div className="modal">
+                        <FaTrashAlt size={48} />
+                        <h3>Excluir Funcionário</h3>
+                        <p>
+                            Quer mesmo excluir este funcionário? <br/>
+                            Ele será apagado para sempre.  
+                        </p>
+                        <footer>
+                            <Button width isOutlined onClick={closeModal}>Cancelar</Button>
+                            <Button width onClick={() => handleDeleteEmployee()}>Excluir</Button>
+                        </footer>
+                    </div>
+                </div>
             </Modal>
         </>
     )

@@ -53,7 +53,7 @@ export function TaskEditPage() {
     }
 
     return (
-        <Box as='body' bgColor='#F2F0F5' height='100vh' fontWeight='500' color='#FCFDFF' border='none'>
+        <Box as='div' bgColor='#F2F0F5' height='100vh' fontWeight='500' color='#FCFDFF' border='none'>
             <Header taskId={taskId} />
             <Box as='div' width='min(1440px, 90vw)' margin='0 auto' display='flex'>
                 <Main taskId={taskId} setNewDescription={setNewDescription} setNewDeadline={setNewDeadline} setNewStatus={setNewStatus} />
