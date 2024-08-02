@@ -26,6 +26,7 @@ export function AddEmployeePage() {
     const [cpf, setCpf] = useState('')
     const [phone, setPhone] = useState('')
     const [department, setDepartment] = useState('')
+    const [role, setRole] = useState('')
 
     const { departments } = useDepartments()
 
@@ -43,6 +44,7 @@ export function AddEmployeePage() {
                 cpf,
                 phone,
                 department: departmentRef,
+                role,
                 image: '' 
             });
 
@@ -200,6 +202,24 @@ export function AddEmployeePage() {
                                     {departments.map(department => (
                                     <option key={department.id} value={department.id}>{department.name}</option>
                                     ))}
+                                </Select>
+                            </Box>
+                            <Box as='div' mt='1.5rem'>
+                                <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
+                                    Função
+                                </Box>
+                                <Select 
+                                    placeholder='Selecionar Função' 
+                                    width='100%' 
+                                    backgroundColor='#FCFDFF' 
+                                    border='1px solid #E1E3E6' 
+                                    borderRadius='0.313rem' 
+                                    color='#5A5A66' 
+                                    mt='1rem' 
+                                    onChange={event => setRole(event.target.value)}
+                                >
+                                    <option key='supervisor' value='supervisor'>Supervisor</option>
+                                    <option key='employee' value='employee'>Funcionário</option>
                                 </Select>
                             </Box>
                         </Box>

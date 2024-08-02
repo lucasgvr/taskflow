@@ -1,0 +1,55 @@
+.editDepartmentsPage {
+    padding: 20px;
+    background-color: #f4f4f9;
+    
+    .titleButton {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: center;
+
+        .departmentInfo {
+            
+            h1 {
+                font-size: 2rem;
+
+                font-weight: 600;
+                line-height: 2.5rem;
+                color: #5a5a66;
+            }
+        }
+    }    
+    
+    .employeesList {
+        margin-top: 1rem;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        
+        h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        ul {
+            list-style-type: none;
+            padding: 0;
+            
+            .employeeItem {
+                border-bottom: 1px solid #eee;
+                padding: 10px 0;
+                
+                p {
+                    margin: 5px 0;
+                    color: #555;
+                }
+                
+                &:last-child {
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+}

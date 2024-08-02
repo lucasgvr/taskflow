@@ -11,7 +11,7 @@ import { MdModeEdit } from "react-icons/md";
 import { MdDelete } from "react-icons/md";
 
 import { useState } from "react";
-import { doc, deleteDoc, collection, query, where, getDocs, updateDoc } from "firebase/firestore"
+import { doc, deleteDoc, collection, query, where, getDocs, updateDoc, arrayUnion } from "firebase/firestore"
 import { db } from "../../services/firebase"
 import Modal from 'react-modal'
 import { FaTrashAlt } from "react-icons/fa";
@@ -87,9 +87,15 @@ export function DepartmentsPage() {
             const newDepartmentDocRef = doc(db, 'departments', 'bwLY5wnNiKoU0qZSeHQl');
 
                 
-            const employeeUpdates = employeesInDepartment.map(employeeDoc => 
-                updateDoc(employeeDoc.ref, { department: newDepartmentDocRef })
-            );
+            const employeeUpdates = employeesInDepartment.map(employeeDoc => {
+                const employeeUpdate = updateDoc(employeeDoc.ref, { department: newDepartmentDocRef })
+            
+                const departmentUpdate = updateDoc(newDepartmentDocRef, {
+                    employees: arrayUnion(employeeDoc.ref)
+                })
+            
+                return Promise.all([employeeUpdate, departmentUpdate]);
+            })
 
             await Promise.all(employeeUpdates);
 
@@ -131,7 +137,7 @@ export function DepartmentsPage() {
                                 <tr key={department.id}>
                                     <td>{department.name}</td>
                                     <td className="actions"> 
-                                        <MdModeEdit size={24}>Edit</MdModeEdit> 
+                                        <Link to={`/departments/${department.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
                                         <MdDelete size={24} onClick={() => openDeleteModal(department.id)}>Delete</MdDelete> 
                                     </td>
                                 </tr>

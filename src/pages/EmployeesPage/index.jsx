@@ -152,6 +152,7 @@ export function EmployeesPage() {
                                     <td>{employee.cpf}</td>
                                     <td>{departments[employee.id] ? departments[employee.id] : 'Carregando...'}</td>
                                     <td>{employee.password}</td>
+                                    <td>{employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</td>
                                     <td className="actions">
                                         <Link to={`/employees/${employee.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
                                         <MdDelete size={24} onClick={() => openModal(employee.id)}>Delete</MdDelete>

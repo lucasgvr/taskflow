@@ -8,6 +8,7 @@ import { useDepartments } from '../../hooks/useDepartments';
 
 export function EmployeePage() {
   const { employeeId } = useParams();
+  
   const [employee, setEmployee] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [firstName, setFirstName] = useState('');
