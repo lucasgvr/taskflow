@@ -14,6 +14,9 @@ import { useDepartments } from "../../hooks/useDepartments";
 import { db } from "../../services/firebase"
 import { collection, doc, addDoc, updateDoc, arrayUnion } from "firebase/firestore"
 
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 import { useNavigate } from "react-router-dom";
 
 export function AddEmployeePage() {
@@ -32,6 +35,30 @@ export function AddEmployeePage() {
 
     async function handleAddEmployee(event) {
         event.preventDefault()
+
+        if (!firstName || !lastName || !email || !password || !cpf || !phone || !department || !role) {
+            toast.error('Todos os campos são obrigatórios');
+            return;
+        }
+
+        const isPhoneValid = /^\d+$/.test(phone);
+        const isCpfValid = /^\d+$/.test(cpf);
+        const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!isEmailValid.test(email)) {
+            toast.error('Email inválido');
+            return;
+        }
+
+        if (!isPhoneValid) {
+            toast.error('Telefone deve conter apenas números');
+            return;
+        }
+
+        if (!isCpfValid) {
+            toast.error('CPF deve conter apenas números');
+            return;
+        }
 
         try {
             const departmentRef = doc(db, 'departments', department)
@@ -52,10 +79,13 @@ export function AddEmployeePage() {
                 employees: arrayUnion(employeeRef)
             }); 
             
-            console.log('User added successfully')
-            navigate('/employees')
+            toast.success('Funcionário adicionado com sucesso!')
+            setTimeout(() => {
+                navigate('/employees')
+            }, 5000)
         } catch (error) {
-            console.error('Error adding user:', error)
+            toast.error('Erro ao adicionar funcionário')
+            console.error('Erro ao adicionar funcionário:', error)
         }
     }
 
@@ -242,6 +272,19 @@ export function AddEmployeePage() {
                     </Box>
                 </Box>
             </Box>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                draggable
+                theme="light"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+            />
         </>
     )
 }

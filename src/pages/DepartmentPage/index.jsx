@@ -9,7 +9,10 @@ import { Button } from "../../components/Button"
 import { doc, getDoc, updateDoc } from "firebase/firestore"
 import { db } from "../../services/firebase"
 
+import { Loader } from '../../components/Loader';
+
 import './styles.scss'
+import { toast } from 'react-toastify';
 
 export function DepartmentPage() {
 
@@ -31,19 +34,24 @@ export function DepartmentPage() {
         
                 if (departmentSnapshot.exists()) {
                     const departmentData = departmentSnapshot.data();
-                    console.log('Department Data:', departmentData);
                     setDepartment(departmentData);
     
                     if (departmentData.employees) {
                         fetchEmployees(departmentData.employees);
                     }
                 } else {
-                    console.log('No such document!');
+                    toast.error('Erro ao carregar departamento');
+                    setTimeout(() => {
+                        navigate('/departments');
+                    }, 5000)
                     setDepartment(null);
                 }
             } catch (error) {
-                console.error('Error fetching document:', error);
-                throw error;
+                toast.error('Erro ao carregar departamento');
+                console.error('Erro ao carregar departamento: ', error);
+                setTimeout(() => {
+                    navigate('/departments');
+                }, 5000)
             }
         }
 
@@ -57,33 +65,48 @@ export function DepartmentPage() {
                     if (snapshot.exists()) {
                         return snapshot.data();
                     } else {
-                        console.log('No such employee document!');
+                        console.log('Não existe funcionário'); 
                         return null;
                     }
                 }).filter(data => data !== null); 
     
-                setEmployees(employeeData);
+                const sortedEmployeeData = employeeData.sort((a, b) => {
+                    if (a.firstName < b.firstName) return -1;
+                    if (a.firstName > b.firstName) return 1;
+                    return 0;
+                });
+        
+                setEmployees(sortedEmployeeData);
             } catch (error) {
-                console.error('Error fetching employees:', error);
+                console.error('Erro ao carregar funcionários:', error);
             }
         }
 
         fetchDepartment()
+        // eslint-disable-next-line
     }, [departmentId])
 
     async function updateDepartmentName() {
         try {
             const departmentRef = doc(db, 'departments', departmentId);
             await updateDoc(departmentRef, { name: departmentName });
-            console.log('Department name updated successfully');
+            toast.success('Nome do departamento atualizado com sucesso!');
             setDepartmentName(departmentName)
             setIsEditing(false)
 
-            navigate('/departments')
+            setTimeout(() => {
+                navigate('/departments')
+            }, 5000)
         } catch (error) {
-            console.error('Error updating department name:', error);
+            toast.error('Erro ao atualizar nome do departamento');
+            console.error('Erro ao atualizar nome do departamento:', error);
         }
     }
+
+    if (!department) {
+        return <Loader />
+    }
+    
 
     return (
         <>
@@ -112,11 +135,18 @@ export function DepartmentPage() {
                 
 
                     {isEditing ? 
+                    <div className='buttons'>
+                        <Button isOutlined onClick={() =>setIsEditing(false)}>
+                            <Box display='flex' justifyContent='center' alignItems='center'>
+                                <Text>Cancelar</Text>
+                            </Box>
+                        </Button>
                         <Button onClick={() =>updateDepartmentName()}>
                             <Box display='flex' justifyContent='center' alignItems='center'>
                                 <Text>Salvar</Text>
                             </Box>
                         </Button>
+                    </div>
                         
                     :
                         <Button onClick={() =>setIsEditing(true)}>
@@ -127,7 +157,7 @@ export function DepartmentPage() {
                     }
 
                 </div>
-                {employees.length > 0 && (
+                {employees.length > 0 ? (
                     <div className="employeesList">
                         <h2>Funcionários:</h2>
                         <ul>
@@ -139,11 +169,16 @@ export function DepartmentPage() {
                                     <p><strong>CPF:</strong> {employee.cpf}</p>
                                     <p><strong>Telefone:</strong> {employee.phone}</p>
                                     <p><strong>Senha:</strong> {employee.password}</p>
-                                    <p><strong>Função:</strong> {employee.role === 'supervisor' ? 'Supervisor' : 'Employee'}</p>
+                                    <p><strong>Função:</strong> {employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</p>
                                 </li>
                             ))}
                         </ul>
                     </div>
+                    )
+                    : (
+                        <div className="noEmployeesMessage">
+                            <h2>Nenhum funcionário encontrado</h2>
+                        </div>
                     )}
             </div>
         </>

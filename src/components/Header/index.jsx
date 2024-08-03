@@ -12,7 +12,15 @@ import "./styles.scss"
 export function Header() {
     const location = useLocation()
 
-    const linkPath = location.pathname === '/home' ? '/' : '/home';
+    let linkPath
+    
+    if (location.pathname.startsWith('/employees/')) {
+        linkPath = '/employees';
+    } else if (location.pathname.startsWith('/departments/')) {
+        linkPath = '/departments';
+    } else {
+        linkPath = '/home';
+    }
 
     return (
         <header id="header">

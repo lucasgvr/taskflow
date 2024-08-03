@@ -1,6 +1,5 @@
 .editDepartmentsPage {
     padding: 20px;
-    background-color: #f4f4f9;
     
     .titleButton {
         display: flex;
@@ -18,6 +17,16 @@
                 color: #5a5a66;
             }
         }
+
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+      
+            button {
+              flex: 1;
+            }
+          }
     }    
     
     .employeesList {

@@ -15,6 +15,9 @@ import { MdModeEdit } from "react-icons/md"
 import { MdDelete } from "react-icons/md"
 import { FaTrashAlt } from "react-icons/fa";
 
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 import './styles.scss'
 
 import Modal from 'react-modal'
@@ -36,8 +39,8 @@ export function EmployeesPage() {
                         const departmentName = await getDepartmentOfEmployee(employee.id)
                         departmentsData[employee.id] = departmentName
                     } catch (error) {
-                        console.error(`Error fetching department for employee ${employee.id}:`, error)
-                        departmentsData[employee.id] = 'Error fetching department'
+                        console.error(`Erro ao encontrar departamento para o funcionário ${employee.id}:`, error)
+                        departmentsData[employee.id] = 'Error ao encontrar departamento'
                     }
                 }
             }
@@ -102,12 +105,13 @@ export function EmployeesPage() {
     
                     // Delete the employee document
                     await deleteDoc(docRef);
-                    console.log('Employee deleted');
+                    toast.success('Funcionário excluído com sucesso!');
                 } else {
-                    console.error('No such employee found!');
+                    toast.error('Funcionário não encontrado!');
                 }
             } catch (error) {
-                console.error('Error removing employee: ', error);
+                toast.error('Erro ao excluir funcionário!');
+                console.error('Erro ao excluir funcionário: ', error);
             } finally {
                 closeModal();
             }
@@ -138,8 +142,7 @@ export function EmployeesPage() {
                                 <th>Telefone</th>
                                 <th>CPF</th>
                                 <th>Departamento</th>
-                                <th>Senha</th>
-                                <th>Opções</th> 
+                                <th>Função</th> 
                             </tr>
                         </thead>
                         <tbody>
@@ -151,7 +154,6 @@ export function EmployeesPage() {
                                     <td>{employee.phone}</td>
                                     <td>{employee.cpf}</td>
                                     <td>{departments[employee.id] ? departments[employee.id] : 'Carregando...'}</td>
-                                    <td>{employee.password}</td>
                                     <td>{employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</td>
                                     <td className="actions">
                                         <Link to={`/employees/${employee.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
@@ -185,6 +187,19 @@ export function EmployeesPage() {
                     </div>
                 </div>
             </Modal>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                draggable
+                theme="light"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+            />
         </>
     )
 }         

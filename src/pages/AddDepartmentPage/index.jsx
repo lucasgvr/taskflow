@@ -8,9 +8,13 @@ import { Link } from "react-router-dom";
 import { Box, Text, Input} from "@chakra-ui/react"
 
 import { db } from "../../services/firebase"
-import { collection, addDoc } from "firebase/firestore"
+import { collection, addDoc, query, getDocs, where } from "firebase/firestore"
 
 import { useNavigate } from "react-router-dom";
+
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 
 export function AddDepartmentPage() {
     const navigate = useNavigate();
@@ -21,14 +25,31 @@ export function AddDepartmentPage() {
         event.preventDefault()
 
         try {
+            const q = query(collection(db, 'departments'), where('name', '==', name));
+            const querySnapshot = await getDocs(q);
+    
+            if (!querySnapshot.empty) {
+                toast.error('Nome do departamento já existe!');
+                return;
+            }
+
+            if (!name) {
+                toast.error('Nome do departamento não pode ser vazio!');
+                return;
+            }
+    
             await addDoc(collection(db, 'departments'), {
                 name
-            })
-            
-            console.log('Department added successfully');
-            navigate('/departments')
+            });
+    
+            toast.success('Departamento adicionado com sucesso!');
+    
+            setTimeout(() => {
+                navigate('/departments');
+            }, 5000);
         } catch (error) {
-            console.error('Error adding department:', error);
+            toast.error('Erro ao Adicionar Departamento');
+            console.error('Erro ao adicionar departamento: ', error);
         }
     }
 
@@ -86,6 +107,19 @@ export function AddDepartmentPage() {
                     </Box>
                 </Box>
             </Box>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                draggable
+                theme="light"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+            />
         </>
     )
 }

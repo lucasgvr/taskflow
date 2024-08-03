@@ -12,7 +12,11 @@ export function useEmployees() {
         const getEmployees = async () => {
             const data = await getDocs(employeesCollectionRef)
 
-            setEmployees(data.docs.map((doc) => ({...doc.data(), id: doc.id})))
+            const employeesList = data.docs.map((doc) => ({...doc.data(), id: doc.id}))
+
+            employeesList.sort((a, b) => a.firstName.localeCompare(b.firstName));
+            
+            setEmployees(employeesList);
         }
 
         getEmployees()

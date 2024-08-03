@@ -12,7 +12,11 @@ export function useDepartments() {
         const getDepartments = async () => {
             const data = await getDocs(departmentsCollectionRef)
 
-            setDepartments(data.docs.map((doc) => ({...doc.data(), id: doc.id})))
+            const departmentsList = data.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+            
+            departmentsList.sort((a, b) => a.name.localeCompare(b.name));
+            
+            setDepartments(departmentsList);
         }
 
         getDepartments()

@@ -16,6 +16,9 @@ import { db } from "../../services/firebase"
 import Modal from 'react-modal'
 import { FaTrashAlt } from "react-icons/fa";
 
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 import './styles.scss'
 
 export function DepartmentsPage() {
@@ -51,6 +54,13 @@ export function DepartmentsPage() {
 
      const handleDeleteDepartment = async () => {
         if (selectedDepartment) {
+            if (selectedDepartment === 'bwLY5wnNiKoU0qZSeHQl') {
+                console.error('Este departamento não pode ser excluído');
+                toast.error('Este departamento não pode ser excluído');
+                closeDeleteModal()
+                return;
+            }
+
             try {
                 const departmentDocRef = doc(db, 'departments', selectedDepartment);
                 
@@ -64,16 +74,15 @@ export function DepartmentsPage() {
                 const employeeSnapshots = await getDocs(employeesQuery);
 
                 if (!employeeSnapshots.empty) {
-                    // If employees are found, open the confirmation modal
                     openConfirmDeleteModal(employeeSnapshots.docs);
-                    return; // Don't proceed with deletion until confirmation
+                    return
                 }
 
-               
-
                 await deleteDoc(departmentDocRef);
+                toast.success('Departamento excluído com sucesso');
             } catch (error) {
-                console.error('Error removing department: ', error);
+                toast.error('Erro ao excluir departamento');
+                console.error('Erro ao excluir departamento: ', error);
             } finally {
                 closeDeleteModal();
             }
@@ -81,7 +90,6 @@ export function DepartmentsPage() {
     }
 
     const confirmDeleteDepartment = async () => {
-        console.log(selectedDepartment)
         try {
             const departmentDocRef = doc(db, 'departments', selectedDepartment);
             const newDepartmentDocRef = doc(db, 'departments', 'bwLY5wnNiKoU0qZSeHQl');
@@ -101,9 +109,10 @@ export function DepartmentsPage() {
 
             await deleteDoc(departmentDocRef);
 
-            console.log('Department and associated employees updated successfully');
+            toast.success('Departamento excluído e funcionários associados atualizados com sucesso');
         } catch (error) {
-            console.error('Error removing department: ', error);
+            toast.error('Erro ao excluir departamento');
+            console.error('Erro ao excluir departamento: ', error);
         } finally {
             closeConfirmDeleteModal();
             closeDeleteModal();
@@ -128,8 +137,7 @@ export function DepartmentsPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Actions</th> 
+                                <th>Nome</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -190,6 +198,19 @@ export function DepartmentsPage() {
                     </div>
                 </div>
             </Modal>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                draggable
+                theme="light"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+            />
         </>
     )
 }         

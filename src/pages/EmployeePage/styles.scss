@@ -1,0 +1,55 @@
+.employee-details {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+    border-radius: 8px;
+    
+    h1 {
+        margin-bottom: 2rem;
+        font-size: 2rem;
+
+        font-weight: 600;
+        line-height: 2.5rem;
+        color: #5a5a66;
+    }
+  
+    .employee-form,
+    .employee-info {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+  
+      input,
+      select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+  
+      input,
+      select {
+        width: 100%;
+      }
+  
+      p {
+        margin: 0;
+        font-size: 16px;
+  
+        strong {
+          font-weight: 600;
+        }
+      }
+  
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+  
+        button {
+          flex: 1;
+        }
+      }
+    }
+  }
+  
