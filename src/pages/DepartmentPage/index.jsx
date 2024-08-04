@@ -84,7 +84,7 @@ export function DepartmentPage() {
 
         fetchDepartment()
         // eslint-disable-next-line
-    }, [departmentId])
+    }, [])
 
     async function updateDepartmentName() {
         try {

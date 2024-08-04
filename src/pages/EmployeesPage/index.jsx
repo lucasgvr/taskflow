@@ -49,7 +49,8 @@ export function EmployeesPage() {
         }
 
         fetchDepartments()
-    }, [employees])
+        // eslint-disable-next-line
+    }, [])
 
     async function getDepartmentOfEmployee(employeeId) {
         const employeeDocRef = doc(db, 'employees', employeeId)

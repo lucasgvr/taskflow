@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-import { deleteDoc, doc } from 'firebase/firestore'
+import { deleteDoc, doc, getDoc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
 import Modal from "react-modal"
@@ -14,15 +14,74 @@ import { Button } from '../Button'
 import EditIcon from '../../assets/edit-24.svg'
 import DeleteIcon from '../../assets/trash-24.svg'
 
+import { toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+
 import "../../styles/modal.scss"
 
 export function CardJob({ task }) {
+    Modal.setAppElement("#root")
+
     const [deleteTaskModalIsOpen, setDeleteTaskModalIsOpen] = useState(false)
+
+    const [assignName, setAssignName] = useState("")
+    const [assignType, setAssignType] = useState("")
+    const [formattedDeadline, setFormattedDeadline] = useState("")
 
     const navigate = useNavigate()
 
+    useEffect(() => {
+        async function fetchAssignDetails() {
+            console.log(task.assign)
+            if (task.assign) {
+                const assignDoc = await getDoc(task.assign)
+                if (assignDoc.exists()) {
+                    const isDepartment = task.assign.path.includes('departments')
+                    setAssignName(isDepartment ? assignDoc.data().name : `${assignDoc.data().firstName} ${assignDoc.data().lastName}` || "N/A")
+                    setAssignType(isDepartment ? 'Departamento' : 'Funcionário')
+                } else {
+                    setAssignName("N/A")
+                    setAssignType("")
+                }
+            }
+        }
+
+        fetchAssignDetails()
+
+        function formatDeadline() {
+            const deadlineDate = new Date(task.deadline + 'T00:00:00'); // Ensuring the time is set to midnight
+            const today = new Date()
+            const tomorrow = new Date(today)
+            tomorrow.setDate(today.getDate() + 1)
+            
+            today.setHours(0, 0, 0, 0)
+            tomorrow.setHours(0, 0, 0, 0)
+            deadlineDate.setHours(0, 0, 0, 0)
+
+            if (deadlineDate.getTime() === today.getTime()) {
+                setFormattedDeadline('Hoje')
+            } else if (deadlineDate.getTime() === tomorrow.getTime()) {
+                setFormattedDeadline('Amanhã')
+            } else {
+                const timeDifference = deadlineDate.getTime() - today.getTime()
+                const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24))
+
+                if (daysDifference > 0) {
+                    setFormattedDeadline(`${daysDifference} dias`)
+                } else {
+                    setFormattedDeadline('Atrasada')
+                }
+            }
+        }
+
+        formatDeadline()
+        // eslint-disable-next-line
+    }, [])
+
     const handleDeleteTask = async (id) => {
         const taskDoc = doc(db, "tasks", id)
+
+        toast.success('Tarefa apagada com sucesso!')
 
         await deleteDoc(taskDoc)
     }
@@ -35,11 +94,11 @@ export function CardJob({ task }) {
             </BoxTitle>
             <BoxDeadline>
                 <Title>Prazo</Title>
-                <SubTitle>{task.deadline}</SubTitle>
+                <SubTitle>{formattedDeadline}</SubTitle>
             </BoxDeadline>
             <BoxDeadline>
                 <Title>Atribuído à</Title>
-                <SubTitle>{task.assign}</SubTitle>
+                <SubTitle>{assignName} ({assignType})</SubTitle>
             </BoxDeadline>
             <BoxStatus>
                 <StatusWrapper status={ task.status }>

@@ -36,7 +36,7 @@ export function EmployeePage() {
   useEffect(() => {
     fetchEmployee();
     // eslint-disable-next-line
-  }, [employeeId])
+  }, [])
 
   const fetchEmployee = async () => {
     try {

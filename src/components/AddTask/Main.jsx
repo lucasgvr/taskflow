@@ -1,6 +1,6 @@
-import { Box, Text, Input } from "@chakra-ui/react"
+import { Box, Text, Input, Select } from "@chakra-ui/react"
 
-export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
+export function Main({ setNewDescription, setNewDeadline, setNewAssign, departments, employees }) {
     return (
         <Box as='main'>
             <Box as='div'>
@@ -32,7 +32,7 @@ export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
                                     Prazo
                                 </Box>
                                 <Input 
-                                    type="text" 
+                                    type="date" 
                                     fontWeight='500' 
                                     backgroundColor='#FCFDFF' 
                                     border='1px solid #E1E3E6' 
@@ -47,17 +47,27 @@ export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
                                 <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                     Atribuir à
                                 </Box>
-                                <Input 
-                                    type="text" 
+                                <Select 
                                     fontWeight='500' 
                                     backgroundColor='#FCFDFF' 
                                     border='1px solid #E1E3E6' 
                                     borderRadius='0.313rem' 
-                                    padding='0.75rem 1.5rem' 
                                     width='100%' 
                                     color='#5A5A66' 
                                     onChange={(event) => {setNewAssign(event.target.value)}} 
-                                />
+                                >
+                                    <option value="">Selecionar</option>
+                                    <optgroup label="Departamentos">
+                                        {departments.map((dept, index) => (
+                                            <option key={index} value={`department:${dept.id}`}>{dept.name}</option>
+                                        ))}
+                                    </optgroup>
+                                    <optgroup label="Funcionários">
+                                        {employees.map((emp, index) => (
+                                            <option key={index} value={`employee:${emp.id}`}>{emp.firstName} {emp.lastName}</option>
+                                        ))}
+                                    </optgroup>
+                                </Select>
                             </Box>
                         </Box>
                     </Box>

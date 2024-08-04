@@ -18,7 +18,8 @@ export function Main({ taskId, setNewDescription, setNewDeadline, setNewStatus }
         }
 
         getTask()
-    })
+        // eslint-disable-next-line
+    }, [])
 
     return (
         <Box as='main'>

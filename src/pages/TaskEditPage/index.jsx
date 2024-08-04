@@ -36,7 +36,8 @@ export function TaskEditPage() {
         setNewDescription(task.description)
         setNewDeadline(task.deadline)
         setNewStatus(task.status)
-    }, [taskId, task.description, task.deadline, task.status])
+        // eslint-disable-next-line
+    }, [])
 
     const updateTask = async (id, newDescription, newDeadline, newStatus) => {
         const taskDoc = doc(db, "tasks", id)
