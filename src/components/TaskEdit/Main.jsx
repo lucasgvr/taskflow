@@ -3,11 +3,11 @@ import { useState, useEffect } from "react"
 import { doc, getDoc } from "firebase/firestore"
 import { db } from "../../services/firebase"
 
-import { Box, Text, Input} from "@chakra-ui/react"
+import { Box, Text, Input, Select } from "@chakra-ui/react"
 
-export function Main({ taskId, setNewDescription, setNewDeadline, setNewStatus }) {
+export function Main({ taskId, setNewDescription, setNewDeadline, setNewStatus, setNewAssign, departments, employees }) {
     const [task, setTask] = useState([])
-    
+
     useEffect(() => {
         const docRef = doc(db, "tasks", taskId)
 
@@ -51,7 +51,7 @@ export function Main({ taskId, setNewDescription, setNewDeadline, setNewStatus }
                                     Prazo
                                 </Box>
                                 <Input 
-                                    type="text" 
+                                    type="date" 
                                     fontWeight='500' 
                                     backgroundColor='#FCFDFF' 
                                     border='1px solid #E1E3E6' 
@@ -66,22 +66,50 @@ export function Main({ taskId, setNewDescription, setNewDeadline, setNewStatus }
                             </Box>
                             <Box as='div' ml='1.5rem'>
                                 <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
-                                    Status (Em andamento/Encerrada)
+                                    Status
                                 </Box>
-                                <Input 
-                                    type="text" 
+                                <Select 
                                     fontWeight='500' 
                                     backgroundColor='#FCFDFF' 
                                     border='1px solid #E1E3E6' 
                                     borderRadius='0.313rem' 
-                                    padding='0.75rem 1.5rem' 
                                     width='100%' 
                                     color='#5A5A66' 
                                     defaultValue={task.status}
-                                    onChange={(event) => setNewStatus(event.target.value)}
-                                />
+                                    onChange={(event) => {setNewStatus(event.target.value)}} 
+                                >
+                                    <option value="">Selecionar</option>
+                                    <option value="Em andamento">Em andamento</option>
+                                    <option value="Encerrada">Encerrada</option>
+                                </Select>
                             </Box>
                         </Box>
+                        <Box as='div' mt='1rem'>
+                                <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
+                                    Atribuir à
+                                </Box>
+                                <Select 
+                                    fontWeight='500' 
+                                    backgroundColor='#FCFDFF' 
+                                    border='1px solid #E1E3E6' 
+                                    borderRadius='0.313rem' 
+                                    width='100%' 
+                                    color='#5A5A66' 
+                                    onChange={(event) => {setNewAssign(event.target.value)}} 
+                                >
+                                    <option value="">Selecionar</option>
+                                    <optgroup label="Departamentos">
+                                        {departments.map((dept, index) => (
+                                            <option key={index} value={`department:${dept.id}`}>{dept.name}</option>
+                                        ))}
+                                    </optgroup>
+                                    <optgroup label="Funcionários">
+                                        {employees.map((emp, index) => (
+                                            <option key={index} value={`employee:${emp.id}`}>{emp.firstName} {emp.lastName}</option>
+                                        ))}
+                                    </optgroup>
+                                </Select>
+                            </Box>
                     </Box>
                 </Box>
             </Box>

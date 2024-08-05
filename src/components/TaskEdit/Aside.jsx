@@ -16,7 +16,7 @@ import MoneyColorImg from "../../assets/edit-24.svg"
 
 import "../../styles/modal.scss"
 
-export function Aside({ updateTask, taskId, newDescription, newDeadline, newStatus }) {
+export function Aside({ updateTask, taskId, newDescription, newDeadline, newStatus, newAssign }) {
     const [deleteTaskModalIsOpen, setDeleteTaskModalIsOpen] = useState(false)
 
     const navigate = useNavigate()
@@ -56,7 +56,7 @@ export function Aside({ updateTask, taskId, newDescription, newDeadline, newStat
                     height='3rem' 
                     backgroundColor='#36B336' 
                     color='#FCFDFF' 
-                    onClick={() => updateTask(taskId, newDescription, newDeadline, newStatus)}
+                    onClick={() => updateTask(taskId, newDescription, newDeadline, newStatus, newAssign)}
                     _hover={{backgroundColor: '#3CC73C'}}
                 >
                     Salvar
