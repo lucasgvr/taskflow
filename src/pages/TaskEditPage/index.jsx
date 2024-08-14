@@ -99,14 +99,14 @@ export function TaskEditPage() {
             }
         ]        
         setTask({ ...task, notes: updatedNotes });
-        toast.success('Observação adicionada com sucesso!')
+        toast.success('Anotação adicionada com sucesso!')
         setNewNote("");
     };
 
     const handleDeleteNote = (noteIndex) => {
         const updatedNotes = task.notes.filter((_, index) => index !== noteIndex);
         setTask({ ...task, notes: updatedNotes });
-        toast.success('Observação removida com sucesso!');
+        toast.success('Anotação removida com sucesso!');
     };
 
     return (
@@ -119,7 +119,7 @@ export function TaskEditPage() {
 
             <Box as='div' width='min(900px, 90vw)' margin='4rem auto' display='flex' gap='1rem' alignItems='center' justifyContent='center'>
                 <Textarea
-                    placeholder="Adicionar observações..."
+                    placeholder="Adicionar anotações..."
                     backgroundColor='#fff'
                     color='#5A5A66'
                     borderRadius='0.313rem'
@@ -130,7 +130,7 @@ export function TaskEditPage() {
                 <Button onClick={addNote}>Adicionar</Button>
             </Box>
             <Box as='div' width='min(900px, 90vw)' margin='1rem auto'>
-                <Heading size="md" mb="1rem" color='#5A5A66'>Observações</Heading>
+                <Heading size="md" mb="1rem" color='#5A5A66'>Anotações</Heading>
                 <VStack spacing={4} align="start" width='100%'>
                         {task && task.notes && task.notes.length > 0 ? task.notes.map((note, index) => (
                         <Box key={index} p={4} width='100%' borderRadius="0.313rem" border='1px solid #E1E3E6'>
@@ -154,7 +154,7 @@ export function TaskEditPage() {
                             </HStack>
                         </Box>
                     )) : (
-                        <Text color='#5A5A66'>Não há Observações para esta tarefa</Text>
+                        <Text color='#5A5A66'>Não há anotações para esta tarefa</Text>
                     )}
                 </VStack>
             </Box>

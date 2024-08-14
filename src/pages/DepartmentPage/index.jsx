@@ -6,13 +6,15 @@ import { Box, Text, Input } from '@chakra-ui/react'
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 
-import { doc, getDoc, updateDoc } from "firebase/firestore"
+import { doc, getDoc, updateDoc, query, collection, where, getDocs } from "firebase/firestore"
 import { db } from "../../services/firebase"
 
 import { Loader } from '../../components/Loader';
 
 import './styles.scss'
-import { toast } from 'react-toastify';
+
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 export function DepartmentPage() {
 
@@ -87,8 +89,30 @@ export function DepartmentPage() {
     }, [])
 
     async function updateDepartmentName() {
+        if (departmentId === 'bwLY5wnNiKoU0qZSeHQl') {
+            console.error('Este departamento não pode ser editado');
+            toast.error('Este departamento não pode ser editado');
+            setIsEditing(false)
+
+            return;
+        }
+
         try {
             const departmentRef = doc(db, 'departments', departmentId);
+
+            const q = query(collection(db, 'departments'), where('name', '==', departmentName));
+            const querySnapshot = await getDocs(q);
+    
+            if (!querySnapshot.empty) {
+                toast.error('Nome do departamento já existe!');
+                return;
+            }
+
+            if (!departmentName) {
+                toast.error('Nome do departamento não pode ser vazio!');
+                return;
+            }
+
             await updateDoc(departmentRef, { name: departmentName });
             toast.success('Nome do departamento atualizado com sucesso!');
             setDepartmentName(departmentName)
@@ -181,6 +205,19 @@ export function DepartmentPage() {
                         </div>
                     )}
             </div>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                draggable
+                theme="light"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+            />
         </>
     )
 }         

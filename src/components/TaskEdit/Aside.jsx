@@ -16,17 +16,23 @@ import MoneyColorImg from "../../assets/edit-24.svg"
 
 import "../../styles/modal.scss"
 
+import { toast } from "react-toastify"
+
 export function Aside({ updateTask, taskId, newDescription, newDeadline, newStatus, newAssign }) {
     const [deleteTaskModalIsOpen, setDeleteTaskModalIsOpen] = useState(false)
 
     const navigate = useNavigate()
   
     const handleDeleteTask = async (id) => {
-      const taskDoc = doc(db, "tasks", id)
-  
-      await deleteDoc(taskDoc)
+        const taskDoc = doc(db, "tasks", id)
 
-      navigate("/home")
+        toast.success('Tarefa apagada com sucesso!')
+
+        await deleteDoc(taskDoc)
+
+        setTimeout(() => {
+            navigate('/home');
+        }, 5000);
     }
 
     return (

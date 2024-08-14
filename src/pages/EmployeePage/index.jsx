@@ -81,6 +81,30 @@ export function EmployeePage() {
   const handleUpdateEmployee = async (e) => {
     e.preventDefault();
 
+    if (!firstName || !lastName || !email || !cpf || !phone || !department || !role) {
+        toast.error('Todos os campos são obrigatórios');
+        return;
+    }
+
+    const isPhoneValid = /^\d+$/.test(phone);
+    const isCpfValid = /^\d+$/.test(cpf);
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!isEmailValid.test(email)) {
+        toast.error('Email inválido');
+        return;
+    }
+
+    if (!isPhoneValid) {
+        toast.error('Telefone deve conter apenas números');
+        return;
+    }
+
+    if (!isCpfValid) {
+        toast.error('CPF deve conter apenas números');
+        return;
+    }
+
     try {
         const employeeDocRef = doc(db, 'employees', employeeId);
 

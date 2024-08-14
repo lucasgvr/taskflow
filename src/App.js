@@ -14,6 +14,8 @@ import { AddDepartmentPage } from "./pages/AddDepartmentPage"
 import { EmployeePage } from "./pages/EmployeePage"
 import { DepartmentPage } from "./pages/DepartmentPage"
 
+import { ToastContainer } from "react-toastify"
+
 function App() {
     return (
         <BrowserRouter>
@@ -33,7 +35,21 @@ function App() {
                 <Route exact path="/departments" element={ <DepartmentsPage /> } />
                 <Route exact path="/departments/new" element={ <AddDepartmentPage /> } />
                 <Route exact path="/departments/:departmentId" element={ <DepartmentPage /> } />
+
             </Routes>
+            
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                draggable
+                theme="light"
+                pauseOnFocusLoss={false}
+                pauseOnHover={false}
+            />
         </BrowserRouter>
     )
 }

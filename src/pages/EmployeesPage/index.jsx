@@ -48,29 +48,30 @@ export function EmployeesPage() {
             setDepartments(departmentsData)
         }
 
+        async function getDepartmentOfEmployee(employeeId) {
+            const employeeDocRef = doc(db, 'employees', employeeId)
+            const employeeDocSnapshot = await getDoc(employeeDocRef)
+    
+            if (employeeDocSnapshot.exists()) {
+                const employeeData = employeeDocSnapshot.data()
+                const departmentRef = employeeData.department
+                
+                const departmentDocSnapshot = await getDoc(departmentRef)
+    
+                if (!employeeDocSnapshot.exists()) {
+                    return('Departamento não encontrado')
+                }
+    
+                const departmentData = departmentDocSnapshot.data()
+    
+                return(departmentData.name)
+            }
+        }
+
         fetchDepartments()
         // eslint-disable-next-line
-    }, [])
+    }, [departments])
 
-    async function getDepartmentOfEmployee(employeeId) {
-        const employeeDocRef = doc(db, 'employees', employeeId)
-        const employeeDocSnapshot = await getDoc(employeeDocRef)
-
-        if (employeeDocSnapshot.exists()) {
-            const employeeData = employeeDocSnapshot.data()
-            const departmentRef = employeeData.department
-            
-            const departmentDocSnapshot = await getDoc(departmentRef)
-
-            if (!employeeDocSnapshot.exists()) {
-                return('Departamento não encontrado')
-            }
-
-            const departmentData = departmentDocSnapshot.data()
-
-            return(departmentData.name)
-        }
-    }
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
