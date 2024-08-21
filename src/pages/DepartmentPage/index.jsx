@@ -6,17 +6,27 @@ import { Box, Text, Input } from '@chakra-ui/react'
 import { Header } from "../../components/Header"
 import { Button } from "../../components/Button"
 
-import { doc, getDoc, updateDoc, query, collection, where, getDocs } from "firebase/firestore"
+import { doc, getDoc, updateDoc, query, collection, where, getDocs, arrayRemove, deleteDoc } from "firebase/firestore"
 import { db } from "../../services/firebase"
 
 import { Loader } from '../../components/Loader';
+
+import { MdModeEdit } from "react-icons/md"
+import { MdDelete } from "react-icons/md"
+import { FaTrashAlt } from "react-icons/fa";
+
+import { Link } from "react-router-dom"
 
 import './styles.scss'
 
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
+import Modal from 'react-modal'
+
+
 export function DepartmentPage() {
+    Modal.setAppElement('#root');
 
     const { departmentId } = useParams()
 
@@ -27,6 +37,57 @@ export function DepartmentPage() {
     const [departmentName, setDepartmentName] = useState('');
 
     const navigate = useNavigate();
+
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+    const openModal = (employeeId) => {
+        setSelectedEmployee(employeeId);
+        setModalIsOpen(true);
+    };
+    
+    const closeModal = () => {
+        setModalIsOpen(false);
+        setSelectedEmployee(null);
+    };
+
+    const handleDeleteEmployee = async () => {
+        if (selectedEmployee) {
+            try {
+                // Reference to the employee document
+                const docRef = doc(db, 'employees', selectedEmployee);
+    
+                // Fetch the employee document to get the department reference
+                const employeeDoc = await getDoc(docRef);
+                if (employeeDoc.exists()) {
+                    const employeeData = employeeDoc.data();
+                    const departmentRef = employeeData.department;
+    
+                    // Remove the employee reference from the department's employees array
+                    if (departmentRef) {
+                        await updateDoc(departmentRef, {
+                            employees: arrayRemove(docRef)
+                        });
+                    }
+    
+                    // Delete the employee document
+                    await deleteDoc(docRef);
+                    toast.success('Funcionário excluído com sucesso!');
+                } else {
+                    toast.error('Funcionário não encontrado!');
+                }
+            } catch (error) {
+                toast.error('Erro ao excluir funcionário!');
+                console.error('Erro ao excluir funcionário: ', error);
+            } finally {
+                closeModal();
+                
+                setTimeout(() => {
+                    navigate('/departments')
+                }, 5000)
+            }
+        }
+    }
 
     useEffect(() => {
         async function fetchDepartment() {
@@ -65,7 +126,10 @@ export function DepartmentPage() {
     
                 const employeeData = employeeSnapshots.map(snapshot => {
                     if (snapshot.exists()) {
-                        return snapshot.data();
+                        return {
+                            id: snapshot.id, // Add the document ID here
+                            ...snapshot.data() // Spread the document data
+                        };
                     } else {
                         console.log('Não existe funcionário'); 
                         return null;
@@ -77,7 +141,7 @@ export function DepartmentPage() {
                     if (a.firstName > b.firstName) return 1;
                     return 0;
                 });
-        
+
                 setEmployees(sortedEmployeeData);
             } catch (error) {
                 console.error('Erro ao carregar funcionários:', error);
@@ -125,6 +189,28 @@ export function DepartmentPage() {
             toast.error('Erro ao atualizar nome do departamento');
             console.error('Erro ao atualizar nome do departamento:', error);
         }
+    }
+
+    function formatCPF(value) {
+        value = value.replace(/\D/g, '');
+    
+        value = value.slice(0, 11);
+    
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    
+        return value;
+    }
+
+    function formatPhoneNumber(value) {
+        value = value.replace(/\D/g, '');
+    
+        value = value.slice(0, 11);
+    
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    
+        return value;
     }
 
     if (!department) {
@@ -184,19 +270,34 @@ export function DepartmentPage() {
                 {employees.length > 0 ? (
                     <div className="employeesList">
                         <h2>Funcionários:</h2>
-                        <ul>
-                            {employees.map((employee, index) => (
-                                <li key={index} className="employeeItem">
-                                    <p><strong>Nome:</strong> {employee.firstName}</p>
-                                    <p><strong>Sobrenome:</strong> {employee.lastName}</p>
-                                    <p><strong>Email:</strong> {employee.email}</p>
-                                    <p><strong>CPF:</strong> {employee.cpf}</p>
-                                    <p><strong>Telefone:</strong> {employee.phone}</p>
-                                    <p><strong>Senha:</strong> {employee.password}</p>
-                                    <p><strong>Função:</strong> {employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</p>
-                                </li>
+                        <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Sobrenome</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>CPF</th>
+                                <th>Função</th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {employees.map((employee) => (
+                                <tr key={employee.id}>
+                                    <td>{employee.firstName}</td>
+                                    <td>{employee.lastName}</td>
+                                    <td>{employee.email}</td>
+                                    <td>{formatPhoneNumber(employee.phone)}</td>
+                                    <td>{formatCPF(employee.cpf)}</td>
+                                    <td>{employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</td>
+                                    <td className="actions">
+                                        <Link to={`/employees/${employee.id}`}><MdModeEdit size={24}>Edit</MdModeEdit></Link>
+                                        <MdDelete size={24} onClick={() => openModal(employee.id)}>Delete</MdDelete>
+                                    </td>
+                                </tr>
                             ))}
-                        </ul>
+                        </tbody>
+                    </table>
                     </div>
                     )
                     : (
@@ -218,6 +319,28 @@ export function DepartmentPage() {
                 pauseOnFocusLoss={false}
                 pauseOnHover={false}
             />
+
+            <Modal
+                isOpen={modalIsOpen}
+                className="deleteEmployeeModal"
+                onRequestClose={closeModal}
+
+            >
+                <div className="modalWrapper">
+                    <div className="modal">
+                        <FaTrashAlt size={48} />
+                        <h3>Excluir Funcionário</h3>
+                        <p>
+                            Quer mesmo excluir este funcionário? <br/>
+                            Ele será apagado para sempre.  
+                        </p>
+                        <footer>
+                            <Button width isOutlined onClick={closeModal}>Cancelar</Button>
+                            <Button width onClick={() => handleDeleteEmployee()}>Excluir</Button>
+                        </footer>
+                    </div>
+                </div>
+            </Modal>
         </>
     )
 }         

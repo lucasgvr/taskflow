@@ -40,7 +40,7 @@ export function CardJob({ task }) {
                     setAssignName(isDepartment ? assignDoc.data().name : `${assignDoc.data().firstName} ${assignDoc.data().lastName}` || "N/A")
                     setAssignType(isDepartment ? 'Departamento' : 'Funcionário')
                 } else {
-                    setAssignName("N/A")
+                    setAssignName("Sem atribuição")
                     setAssignType("")
                 }
             }
@@ -98,7 +98,7 @@ export function CardJob({ task }) {
             </BoxDeadline>
             <BoxDeadline>
                 <Title>Atribuído à</Title>
-                <SubTitle>{assignName} ({assignType})</SubTitle>
+                <SubTitle>{assignName} {assignType ? ({assignType}) : ""}</SubTitle>
             </BoxDeadline>
             <BoxStatus>
                 <StatusWrapper status={ task.status }>

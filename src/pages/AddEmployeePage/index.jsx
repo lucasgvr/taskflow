@@ -31,6 +31,9 @@ export function AddEmployeePage() {
     const [department, setDepartment] = useState('')
     const [role, setRole] = useState('')
 
+    const [formattedCpf, setFormattedCpf] = useState('')
+    const [formattedPhone, setFormattedPhone] = useState('')
+
     const { departments } = useDepartments()
 
     async function handleAddEmployee(event) {
@@ -41,8 +44,10 @@ export function AddEmployeePage() {
             return;
         }
 
-        const isPhoneValid = /^\d+$/.test(phone);
-        const isCpfValid = /^\d+$/.test(cpf);
+        const isPhoneValid = /^\d{11}$/.test(phone);
+
+        const isCpfValid = /^\d{11}$/.test(cpf);
+
         const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!isEmailValid.test(email)) {
@@ -51,12 +56,12 @@ export function AddEmployeePage() {
         }
 
         if (!isPhoneValid) {
-            toast.error('Telefone deve conter apenas números');
+            toast.error('Telefone deve conter apenas números e 11 dígitos');
             return;
         }
 
         if (!isCpfValid) {
-            toast.error('CPF deve conter apenas números');
+            toast.error('CPF deve conter apenas números e 11 dígitos');
             return;
         }
 
@@ -88,6 +93,40 @@ export function AddEmployeePage() {
             console.error('Erro ao adicionar funcionário:', error)
         }
     }
+
+    function formatCPF(value) {
+        value = value.replace(/\D/g, '');
+    
+        value = value.slice(0, 11);
+
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    
+        return value;
+    }
+
+    const handleCpfChange = (e) => {
+        const formattedCPF = formatCPF(e.target.value);
+        setCpf(e.target.value.replace(/\D/g, ''));
+        setFormattedCpf(formattedCPF);
+    };
+
+    function formatPhoneNumber(value) {
+        value = value.replace(/\D/g, '');
+    
+        value = value.slice(0, 11);
+    
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    
+        return value;
+    }
+
+    const handlePhoneChange = (e) => {
+        const formattedPHONE = formatPhoneNumber(e.target.value);
+        setPhone(e.target.value.replace(/\D/g, ''));
+        setFormattedPhone(formattedPHONE);
+    };
 
     return (
         <>
@@ -193,7 +232,8 @@ export function AddEmployeePage() {
                                         width='100%' 
                                         color='#5A5A66' 
                                         mt='1rem' 
-                                        onChange={event => setCpf(event.target.value)}
+                                        value={formattedCpf}
+                                        onChange={handleCpfChange}
                                     />
                                 </Box>
                             <Box as='div' flex='1'>
@@ -210,7 +250,8 @@ export function AddEmployeePage() {
                                         width='100%' 
                                         color='#5A5A66' 
                                         mt='1rem' 
-                                        onChange={event => setPhone(event.target.value)}
+                                        value={formattedPhone}
+                                        onChange={handlePhoneChange}
                                     />
                                 </Box>
                             </Box>

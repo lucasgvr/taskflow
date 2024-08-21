@@ -57,7 +57,8 @@ export function AddTaskPage() {
                 description: newDescription,
                 deadline: newDeadline,
                 assign: assignRef,
-                status: "Em andamento"
+                status: "Em andamento",
+                notes: []
             });
     
             toast.success("Tarefa adicionada com sucesso!");

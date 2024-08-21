@@ -64,6 +64,15 @@ export function TaskEditPage() {
 
         let assignRef
 
+        const deadlineDate = new Date(newDeadline + 'T00:00:00')
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); 
+        deadlineDate.setHours(0, 0, 0, 0);
+
+        if (deadlineDate < today) {
+            toast.error("A data de prazo está anterior à data de hoje!")
+        }
+    
         if (newAssign) {
             assignRef = newAssign.includes('department') ? 
                 doc(db, 'departments', newAssign.split(':')[1]) :
@@ -72,7 +81,7 @@ export function TaskEditPage() {
         
         const newFields = {
             description: newDescription || task.description, 
-            deadline: newDeadline || task.deadline, 
+            deadline:  deadlineDate < today ? task.deadline : newDeadline, 
             status: newStatus || task.status,
             assign: assignRef || task.assign,
             notes: updatedNotes || task.notes

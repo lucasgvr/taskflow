@@ -120,6 +120,28 @@ export function EmployeesPage() {
         }
     }
 
+    function formatCPF(value) {
+        value = value.replace(/\D/g, '');
+    
+        value = value.slice(0, 11);
+    
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d)/, '$1.$2');
+        value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    
+        return value;
+    }
+
+    function formatPhoneNumber(value) {
+        value = value.replace(/\D/g, '');
+    
+        value = value.slice(0, 11);
+    
+        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    
+        return value;
+    }
+
     return (
         <>
             <Header />
@@ -153,8 +175,8 @@ export function EmployeesPage() {
                                     <td>{employee.firstName}</td>
                                     <td>{employee.lastName}</td>
                                     <td>{employee.email}</td>
-                                    <td>{employee.phone}</td>
-                                    <td>{employee.cpf}</td>
+                                    <td>{formatPhoneNumber(employee.phone)}</td>
+                                    <td>{formatCPF(employee.cpf)}</td>
                                     <td>{departments[employee.id] ? departments[employee.id] : 'Carregando...'}</td>
                                     <td>{employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</td>
                                     <td className="actions">
