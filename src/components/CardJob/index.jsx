@@ -49,6 +49,11 @@ export function CardJob({ task }) {
         fetchAssignDetails()
 
         function formatDeadline() {
+            if (task.status === "Encerrada") {
+                setFormattedDeadline("Finalizada");
+                return;
+            }
+
             const deadlineDate = new Date(task.deadline + 'T00:00:00'); // Ensuring the time is set to midnight
             const today = new Date()
             const tomorrow = new Date(today)
