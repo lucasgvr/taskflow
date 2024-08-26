@@ -71,6 +71,7 @@ export function TaskEditPage() {
 
         if (deadlineDate < today) {
             toast.error("A data de prazo está anterior à data de hoje!")
+            return
         }
     
         if (newAssign) {
@@ -81,7 +82,7 @@ export function TaskEditPage() {
         
         const newFields = {
             description: newDescription || task.description, 
-            deadline:  deadlineDate < today ? task.deadline : newDeadline, 
+            deadline: newDeadline || task.deadline, 
             status: newStatus || task.status,
             assign: assignRef || task.assign,
             notes: updatedNotes || task.notes
@@ -97,6 +98,11 @@ export function TaskEditPage() {
     }
 
     const addNote = () => {
+        if (newNote === "") {
+            toast.error('A anotação não pode estar vazia!')
+            return
+        }
+
         const createdAt = new Date().toISOString()
 
         const updatedNotes = [

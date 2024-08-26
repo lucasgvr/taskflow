@@ -98,7 +98,7 @@ export function CardJob({ task }) {
             </BoxDeadline>
             <BoxDeadline>
                 <Title>Atribuído à</Title>
-                <SubTitle>{assignName} {assignType ? ({assignType}) : ""}</SubTitle>
+                <SubTitle>{assignName} {assignType ? `(${assignType})` : ""}</SubTitle>
             </BoxDeadline>
             <BoxStatus>
                 <StatusWrapper status={ task.status }>
