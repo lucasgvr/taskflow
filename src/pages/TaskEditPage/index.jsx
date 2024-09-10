@@ -17,6 +17,7 @@ import { Aside } from '../../components/TaskEdit/Aside'
 
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from '../../hooks/useAuth'
 
 import { DeleteIcon } from '@chakra-ui/icons';
 
@@ -37,6 +38,7 @@ export function TaskEditPage() {
 
     const { departments } = useDepartments()
     const { employees } = useEmployees()
+    const { currentUser } = useAuth()
 
     const navigate = useNavigate()
 
@@ -109,7 +111,8 @@ export function TaskEditPage() {
             ...(task.notes || []), 
             { 
                 description: newNote,
-                createdBy: 'Lucas Rocha',
+                createdBy: currentUser.firstName + ' ' + currentUser.lastName,
+                createdById: currentUser.id,
                 createdAt: createdAt
             }
         ]        
@@ -144,6 +147,9 @@ export function TaskEditPage() {
                 />  
                 <Button onClick={addNote}>Adicionar</Button>
             </Box>
+            <Box as='div' width='min(900px, 90vw)'  margin='-2rem auto 2rem' display='flex' gap='1rem' alignItems='left' justifyContent='left'>
+                <Text color='var(--text-body)'>OBS: Não esqueça de salvar a tarefa após adicionar anotações</Text>
+            </Box>
             <Box as='div' width='min(900px, 90vw)' margin='1rem auto'>
                 <Heading size="md" mb="1rem" color='#5A5A66'>Anotações</Heading>
                 <VStack spacing={4} align="start" width='100%'>
@@ -157,15 +163,17 @@ export function TaskEditPage() {
                                         <Text color='#5A5A66' fontSize="sm">Data de criação: {new Date(note.createdAt).toLocaleString()}</Text>
                                     </Box>
                                 </VStack>
-                                <IconButton
-                                    icon={<DeleteIcon />}
-                                    aria-label="Delete Note"
-                                    onClick={() => handleDeleteNote(index)}
-                                    bgColor='var(--orange)'
-                                    size='sm'
-                                    transition='0.25s'
-                                    _hover={{ filter: 'brightness(0.9)' }}
-                                />
+                                {(currentUser.role === 'supervisor' || currentUser.id === note.createdById) && (
+                                    <IconButton
+                                        icon={<DeleteIcon />}
+                                        aria-label="Delete Note"
+                                        onClick={() => handleDeleteNote(index)}
+                                        bgColor='var(--orange)'
+                                        size='sm'
+                                        transition='0.25s'
+                                        _hover={{ filter: 'brightness(0.9)' }}
+                                    />
+                                )}
                             </HStack>
                         </Box>
                     )) : (

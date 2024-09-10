@@ -1,6 +1,19 @@
 import { Box, Heading, Image } from "@chakra-ui/react"
 
+import { useAuth } from "../../hooks/useAuth"
+
+import DefaultImg from "../../assets/default.png"
+import { useNavigate } from "react-router-dom"
+
 export function Aside() {
+    const { logout, currentUser } = useAuth()
+    const navigate = useNavigate()
+
+    const handleSignOut = async () => {
+        await logout()
+        navigate('/')
+    }
+
     return (
         <Box 
             as='aside' 
@@ -16,9 +29,9 @@ export function Aside() {
             justifyContent='center' 
             alignItems='center'
         >
-            <Image src='https://github.com/lucasgvr.png' alt='Dinheiro' mb='1.5rem' borderRadius='50%' border='.25rem solid #F1972C'/>
+            <Image src={DefaultImg} alt='Dinheiro' mb='1.5rem' borderRadius='50%' border='.25rem solid #F1972C'/>
             <Heading fontWeight='600' fontSize='1.75rem' lineHeight='1.875rem' mb='3.875rem'>
-                Lucas
+                {currentUser.firstName}
             </Heading>
                 <Box 
                     as='button' 
@@ -37,8 +50,9 @@ export function Aside() {
                     backgroundColor='#36B336' 
                     color='#FCFDFF' 
                     _hover={{backgroundColor: '#3CC73C'}}
+                    onClick={handleSignOut}
                 >
-                    Salvar Dados
+                    Sair
                 </Box>
         </Box>
     )

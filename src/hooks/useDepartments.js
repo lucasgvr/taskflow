@@ -20,7 +20,7 @@ export function useDepartments() {
         }
 
         getDepartments()
-    })
+    }, [departments])
 
     return { departments, departmentsCollectionRef }
 }

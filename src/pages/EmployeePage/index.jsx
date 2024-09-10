@@ -14,6 +14,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
 import { Loader } from '../../components/Loader';
+import { useAuth } from '../../hooks/useAuth';
 
 export function EmployeePage() {
   const { employeeId } = useParams();
@@ -32,6 +33,7 @@ export function EmployeePage() {
   const [role, setRole] = useState('')
 
   const { departments } = useDepartments();
+  const { currentUser, logout } = useAuth();
 
   useEffect(() => {
     fetchEmployee();
@@ -144,6 +146,11 @@ export function EmployeePage() {
     }
   };
 
+  const handleSignOut = async () => {
+    await logout()
+    navigate('/')
+}
+
   if (!employee) {
     return <Loader />
   }
@@ -200,7 +207,12 @@ export function EmployeePage() {
             <p><strong>Telefone:</strong> {employee.phone}</p>
             <p><strong>Departamento:</strong> {departmentName}</p>
             <p><strong>Função:</strong> {employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</p>
-            <Button onClick={() => setIsEditing(true)}>Editar</Button>
+            {currentUser && currentUser.email === employee.email && (
+                <>
+                    <Button isOutlined onClick={() => setIsEditing(true)}>Editar</Button>
+                    <Button onClick={handleSignOut}>Sair</Button>
+                </>
+            )}
           </div>
         )}
       </div>

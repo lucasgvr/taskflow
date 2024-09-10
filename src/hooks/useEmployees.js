@@ -20,7 +20,7 @@ export function useEmployees() {
         }
 
         getEmployees()
-    })
+    }, [employees])
 
     return { employees, employeesCollectionRef}
 }

@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 
 import "../../styles/modal.scss"
+import { useAuth } from '../../hooks/useAuth'
 
 export function CardJob({ task }) {
     Modal.setAppElement("#root")
@@ -30,9 +31,10 @@ export function CardJob({ task }) {
 
     const navigate = useNavigate()
 
+    const { currentUser } = useAuth()
+
     useEffect(() => {
         async function fetchAssignDetails() {
-            console.log(task.assign)
             if (task.assign) {
                 const assignDoc = await getDoc(task.assign)
                 if (assignDoc.exists()) {
@@ -119,12 +121,14 @@ export function CardJob({ task }) {
                         alt="Icone de editar"
                     />
                 </ButtonAction>
-                <ButtonAction onClick={() => setDeleteTaskModalIsOpen(true)}>
-                    <img
-                        src={ DeleteIcon }
-                        alt="Icone de deletar"
-                    />
-                </ButtonAction>
+                {currentUser.role === 'supervisor' && (
+                    <ButtonAction onClick={() => setDeleteTaskModalIsOpen(true)}>
+                        <img
+                            src={ DeleteIcon }
+                            alt="Icone de deletar"
+                        />
+                    </ButtonAction>
+                )}
             </BoxActions>
             <Modal
                 isOpen={ deleteTaskModalIsOpen }

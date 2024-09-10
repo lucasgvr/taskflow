@@ -1,6 +1,10 @@
-import { Box, Text, Input} from "@chakra-ui/react"
+import { Box, Text, Input, Heading } from "@chakra-ui/react"
+
+import { useAuth } from "../../hooks/useAuth"
 
 export function Main() {
+    const { currentUser } = useAuth()
+
     return (
         <Box as='main'>
             <Box as='div'>
@@ -14,52 +18,26 @@ export function Main() {
                             <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                 Nome
                             </Box>
-                            <Input 
-                                type="text" 
-                                fontWeight='500' 
-                                backgroundColor='#FCFDFF' 
-                                border='1px solid #E1E3E6' 
-                                borderRadius='0.313rem' 
-                                padding='0.75rem 1.5rem' 
-                                width='100%' 
-                                color='#5A5A66' 
-                                defaultValue='Lucas' 
-                            />
+                            <Heading fontWeight='600' fontSize='1.75rem' lineHeight='1.875rem' mb='3.875rem' color='#5a5a66'>
+                                {currentUser.firstName} {currentUser.lastName}
+                            </Heading>
                         </Box>
                         <Box as='div' display='flex' mt='1.5rem'>
                             <Box as='div'>
                                 <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                     Email
                                 </Box>
-                                <Input 
-                                    type='text' 
-                                    fontWeight='500' 
-                                    backgroundColor='#FCFDFF' 
-                                    border='1px solid #E1E3E6'
-                                    borderRadius='0.313rem' 
-                                    padding='0.5rem 1.5rem' 
-                                    width='100%' 
-                                    color='#5A5A66' 
-                                    mt='1rem' 
-                                    defaultValue='lucas.voriarocha@gmail.com'
-                                />
+                                <Heading fontWeight='600' fontSize='1.75rem' lineHeight='1.875rem' mb='3.875rem' color='#5a5a66'>
+                                {currentUser.email}
+                            </Heading>
                             </Box>
                             <Box as='div' ml='1.5rem'>
                                 <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
                                     Telefone
                                 </Box>
-                                <Input 
-                                    type='text' 
-                                    fontWeight='500' 
-                                    backgroundColor='#FCFDFF' 
-                                    border='1px solid #E1E3E6' 
-                                    borderRadius='0.313rem' 
-                                    padding='0.5rem 1.5rem' 
-                                    width='100%' 
-                                    color='#5A5A66' 
-                                    mt='1rem' 
-                                    defaultValue ='(43) 99922-1392'
-                                />
+                                <Heading fontWeight='600' fontSize='1.75rem' lineHeight='1.875rem' mb='3.875rem' color='#5a5a66'>
+                                {currentUser.phone}
+                            </Heading>
                             </Box>
                         </Box>
                     </Box>

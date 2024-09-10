@@ -16,7 +16,7 @@ export function useTasks() {
         }
 
         getTasks()
-    })
+    }, [tasks])
 
     return { tasks, tasksCollectionRef}
 }

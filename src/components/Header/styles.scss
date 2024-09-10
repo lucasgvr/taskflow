@@ -11,7 +11,6 @@
         div {
             flex: 1;
             display: flex;
-            justify-content: space-between;
             align-items: center;
 
             .buttonContainer {
@@ -19,6 +18,11 @@
                 justify-content: left;
 
                 gap: 2rem;
+
+                .buttons {
+                    display: flex;
+                    gap: 1rem;
+                }
             }
 
             h2 {
@@ -46,6 +50,7 @@
                 padding: 0.2rem 0.3rem 0.2rem 0;
                 text-decoration: none;
                 transition: filter 0.2s;
+                cursor: pointer;
 
                 &:hover {
                     filter: brightness(0.9);

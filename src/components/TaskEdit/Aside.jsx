@@ -17,9 +17,12 @@ import MoneyColorImg from "../../assets/edit-24.svg"
 import "../../styles/modal.scss"
 
 import { toast } from "react-toastify"
+import { useAuth } from "../../hooks/useAuth"
 
 export function Aside({ updateTask, taskId, newDescription, newDeadline, newStatus, newAssign }) {
     const [deleteTaskModalIsOpen, setDeleteTaskModalIsOpen] = useState(false)
+
+    const { currentUser } = useAuth()
 
     const navigate = useNavigate()
   
@@ -67,10 +70,11 @@ export function Aside({ updateTask, taskId, newDescription, newDeadline, newStat
                 >
                     Salvar
                 </Box>
-
-                <Box as='a' onClick={() => setDeleteTaskModalIsOpen(true)} border='0' borderRadius='0.313rem'  ml='1rem' width='3rem' height='3rem' display='flex' alignItems='center' justifyContent='center' backgroundColor='#E1E3E5' color='#FCFDFF' _hover={{backgroundColor: '#F0F2F5'}}>
-                    <Image src={ TrashImg } width='1.5rem' height='1.5rem'/>
-                </Box>
+                {currentUser.role === 'supervisor' && (
+                    <Box as='a' onClick={() => setDeleteTaskModalIsOpen(true)} border='0' borderRadius='0.313rem'  ml='1rem' width='3rem' height='3rem' display='flex' alignItems='center' justifyContent='center' backgroundColor='#E1E3E5' color='#FCFDFF' _hover={{backgroundColor: '#F0F2F5'}}>
+                        <Image src={ TrashImg } width='1.5rem' height='1.5rem'/>
+                    </Box>
+                )}
             </Box>
             <Modal
                 isOpen={deleteTaskModalIsOpen}

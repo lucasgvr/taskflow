@@ -5,12 +5,14 @@ import { Box, Image, Text } from '@chakra-ui/react'
 import { Button } from '../Button/index'
 import { Container, InfoWrapper, InfoItem, Title, SubTitle } from './styles'
 
-import { Link } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 
 import PlusIcon from "../../assets/plus-24.svg"
+import { useAuth } from "../../hooks/useAuth"
 
 export function HeaderDetails() {
     const { tasks } = useTasks()
+    const { currentUser } = useAuth()
 
     const countOpen = tasks.filter(task => {
         if (task.status === "Em andamento") {
@@ -28,6 +30,10 @@ export function HeaderDetails() {
         return false;
     }).length
 
+    if(!currentUser) {
+        return <Navigate to='/' />
+    }
+
     return (
         <Container>
             <InfoWrapper>
@@ -44,14 +50,16 @@ export function HeaderDetails() {
                     <SubTitle>Encerradas</SubTitle>
                 </InfoItem>
             </InfoWrapper>
-            <Link as='a' to='/add'>
-                <Button>
-                    <Box display='flex' justifyContent='center' alignItems='center'>
-                        <Image src={ PlusIcon } alt="" />
-                        <Text>Adicionar nova tarefa</Text>
-                    </Box>
-                </Button>
-            </Link>
+            {currentUser.role === 'supervisor' && (
+                <Link as='a' to='/add'>
+                    <Button>
+                        <Box display='flex' justifyContent='center' alignItems='center'>
+                            <Image src={ PlusIcon } alt="" />
+                            <Text>Adicionar nova tarefa</Text>
+                        </Box>
+                    </Button>
+                </Link>
+            )}
         </Container>
     )
 }
