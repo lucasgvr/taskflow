@@ -2,7 +2,7 @@
     height: 10vh;
     background: var(--grey);
 
-    div.container {
+    div.headerContainer {
         display: flex;
         flex-direction: row;
         height: 10vh;
@@ -23,6 +23,13 @@
                     display: flex;
                     gap: 1rem;
                 }
+            }
+
+            .profileContainer {
+                display: flex;
+                justify-content: right;
+
+                gap: 2rem;
             }
 
             h2 {

@@ -5,6 +5,7 @@ import App from './App'
 import { ChakraProvider } from "@chakra-ui/react"
 
 import "./styles/global.scss"
+import './index.css'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 

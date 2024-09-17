@@ -20,6 +20,7 @@ export function useDepartments() {
         }
 
         getDepartments()
+        //eslint-disable-next-line
     }, [departments])
 
     return { departments, departmentsCollectionRef }

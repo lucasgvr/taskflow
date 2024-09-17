@@ -1,11 +1,10 @@
 import { useState } from "react"
 
-import { Navigate, useNavigate } from "react-router-dom"
+import { Navigate } from "react-router-dom"
 
 import { Button } from "../../components/Button/index"
 
 import illustrationImg from "../../assets/illustration.svg"
-import googleIconImg from "../../assets/google-icon.svg"
 import logInImg from "../../assets/log-in.svg"
 
 import { useAuth } from "../../hooks/useAuth"
@@ -15,8 +14,6 @@ import { ToastContainer } from "react-toastify"
 import "./styles.scss"
 
 export function LoginPage() {
-    const navigate = useNavigate()
-
     const { login, currentUser } = useAuth()
 
     const [email, setEmail] = useState("")

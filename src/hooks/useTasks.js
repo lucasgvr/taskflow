@@ -16,6 +16,7 @@ export function useTasks() {
         }
 
         getTasks()
+        //eslint-disable-next-line
     }, [tasks])
 
     return { tasks, tasksCollectionRef}

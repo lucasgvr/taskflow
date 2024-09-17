@@ -9,12 +9,15 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../hooks/useAuth"
 
+import { IoMdNotifications } from "react-icons/io";
+
 import "./styles.scss"
 
 import DefaultImg from "../../assets/default.png"
 import { useEffect } from "react";
 import { db } from "../../services/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import { DialogTrigger } from "../Dialog/dialog";
 
 export function Header() {
     const { currentUser, setUser } = useAuth()
@@ -41,7 +44,8 @@ export function Header() {
 
     useEffect(() => {
        fetchUserData()
-    }, [currentUser])
+    //eslint-disable-next-line
+    }, [currentUser,])
 
     const navigateToProfile = () => {
         navigate(`/employees/${currentUser.id}`)
@@ -67,7 +71,7 @@ export function Header() {
     return (
         <>
             <header id="header">
-                <div className="container">
+                <div className="headerContainer">
                     <div>
                         <div className="buttonContainer">
                             <Link className="backButton" to={linkPath}>
@@ -88,13 +92,21 @@ export function Header() {
                                 </Box>
                             )}
                         </div>
-                        <a className="profile" onClick={navigateToProfile}>
-                            <div>
-                                <h2>{currentUser.firstName} {currentUser.lastName}</h2>
-                                <h6>Ver Perfil</h6>
+                        <div className="profileContainer">
+                            <div className="relative flex justify-end">
+                                <DialogTrigger asChild>
+                                    <IoMdNotifications size={24} className="cursor-pointer text-zinc-300 " />
+                                </DialogTrigger>
+                                <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                             </div>
-                            <img src={DefaultImg} alt="User Avatar" />
-                        </a>
+                            <button className="profile" onClick={navigateToProfile}>
+                                <div>
+                                    <h2>{currentUser.firstName} {currentUser.lastName}</h2>
+                                    <h6>Ver Perfil</h6>
+                                </div>
+                                <img src={DefaultImg} alt="User Avatar" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>

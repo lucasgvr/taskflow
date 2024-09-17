@@ -33,7 +33,7 @@ export function EmployeePage() {
   const [role, setRole] = useState('')
 
   const { departments } = useDepartments();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, setCurrentUser, logout } = useAuth();
 
   useEffect(() => {
     fetchEmployee();
@@ -48,6 +48,7 @@ export function EmployeePage() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setEmployee(data);
+        setCurrentUser(data)
         setFirstName(data.firstName);
         setLastName(data.lastName);
         setEmail(data.email);

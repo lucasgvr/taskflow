@@ -1,4 +1,4 @@
-import { Box, Text, Input, Heading } from "@chakra-ui/react"
+import { Box, Text, Heading } from "@chakra-ui/react"
 
 import { useAuth } from "../../hooks/useAuth"
 

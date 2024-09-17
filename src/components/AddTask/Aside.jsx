@@ -1,6 +1,5 @@
-import { Box, Image, Text } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
 
-import TrashImg from "../../assets/trash-24.svg"
 
 export function Aside({ addTask }) {
     return (
@@ -34,23 +33,6 @@ export function Aside({ addTask }) {
                     _hover={ {backgroundColor: '#3CC73C'} }
                 >
                     Adicionar
-                </Box>
-                <Box 
-                    as='a' 
-                    href='/home' 
-                    border='0' 
-                    borderRadius='0.313rem'  
-                    ml='1rem' 
-                    width='3rem' 
-                    height='3rem' 
-                    display='flex' 
-                    alignItems='center' 
-                    justifyContent='center' 
-                    backgroundColor='#E1E3E5' 
-                    color='#FCFDFF' 
-                    _hover={{backgroundColor: '#F0F2F5'}}
-                >
-                    <Image src={ TrashImg } width='1.5rem' height='1.5rem' />
                 </Box>
             </Box>
         </Box>

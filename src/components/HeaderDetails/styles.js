@@ -6,7 +6,8 @@ export const Container = styled.div`
   height: 15vh;
   border-top: solid 1px #4f4f5b;
   padding: 1rem 3rem;
-  background-color: var(--grey)
+  background-color: var(--grey);
+  align-items: center;
 `
 
 export const InfoWrapper = styled.div`

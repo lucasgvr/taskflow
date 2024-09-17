@@ -20,6 +20,7 @@ export function useEmployees() {
         }
 
         getEmployees()
+        //eslint-disable-next-line
     }, [employees])
 
     return { employees, employeesCollectionRef}
