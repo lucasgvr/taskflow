@@ -6,7 +6,7 @@ import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
 
-import { addDoc } from 'firebase/firestore'
+import { addDoc, collection } from 'firebase/firestore'
 
 import { Box } from '@chakra-ui/react'
 
@@ -53,13 +53,25 @@ export function AddTaskPage() {
             doc(db, 'employees', newAssign.split(':')[1]);
     
         try {
-            await addDoc(tasksCollectionRef, {
+            const taskRef = await addDoc(tasksCollectionRef, {
                 description: newDescription,
                 deadline: newDeadline,
                 assign: assignRef,
                 status: "Em andamento",
                 notes: []
             });
+
+            const notificationsCollectionRef = collection(db, "notifications")
+
+            const notification = {
+                assignId: assignRef,
+                taskId: taskRef.id,
+                message: `A tarefa "${newDescription}" foi criada`,
+                read: false,
+                createdAt: new Date(),
+            }
+            
+            await addDoc(notificationsCollectionRef, notification)
     
             toast.success("Tarefa adicionada com sucesso!");
     

@@ -1,7 +1,15 @@
+import { UserNotifications } from "../UserNotifications";
 import { DialogContent, DialogTitle, DialogClose } from "./dialog";
 import { IoCloseSharp } from "react-icons/io5";
+import { useAuth } from "../../hooks/useAuth";
 
 export function DialogContentWrapper() {
+    const { currentUser } = useAuth();
+
+    if (!currentUser) return null;
+    
+    const departmentId = currentUser.department._key.path.segments[currentUser.department._key.path.segments.length - 1]
+
     return (
         <DialogContent>
             <div className="flex flex-col gap-8">
@@ -11,20 +19,8 @@ export function DialogContentWrapper() {
                         <IoCloseSharp className="size-6 text-zinc-600" />
                     </DialogClose>
                 </div>
-                <div className="flex flex-col gap-4">
-                    <div className="border-2 rounded-xl border-zinc-500 p-4 min-h-[100px]">
-                        <h1 className="text-l font-bold">Tarefa atualizada</h1>
-                        <p className="text-gray-500 line-clamp-2">A tarefa "Concluir relatório" foi atualizada.</p>
-                    </div>
-                    <div className="border-2 rounded-xl border-zinc-500 p-4 min-h-[100px]">
-                        <h1 className="text-l font-bold">Tarefa criada</h1>
-                        <p className="text-gray-500 line-clamp-2">A tarefa "Desenvolver projeto de estágio" foi criada.</p>
-                    </div>
-                    <div className="border-2 rounded-xl border-zinc-500 p-4 min-h-[100px]">
-                        <h1 className="text-l font-bold">Tarefa criada</h1>
-                        <p className="text-gray-500 line-clamp-2">A tarefa "Desenvolver projeto de práticas de extensão e enviar o vídeo no classroom" foi criada.</p>
-                    </div>
-                </div>
+
+                <UserNotifications userId={currentUser.id} departmentId={departmentId} />
             </div>
         </DialogContent>
     )

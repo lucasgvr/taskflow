@@ -22,16 +22,17 @@ const firebaseConfigBackup = {
     appId: "1:56611545188:web:70523398d6b612739a7f71",
 }
 
-// const firebaseConfigBackup2 = {
-//     apiKey: "AIzaSyAPxsODMvXc3g3phqleu66Xh5U_NfCi870",
-//     authDomain: "taskflow-2.firebaseapp.com",
-//     projectId: "taskflow-2",
-//     storageBucket: "taskflow-2.appspot.com",
-//     messagingSenderId: "167972829836",
-//     appId: "1:167972829836:web:bf33696df325cf30d619a9",
-// }
+//eslint-disable-next-line
+const firebaseConfigBackup2 = {
+    apiKey: "AIzaSyAPxsODMvXc3g3phqleu66Xh5U_NfCi870",
+    authDomain: "taskflow-2.firebaseapp.com",
+    projectId: "taskflow-2",
+    storageBucket: "taskflow-2.appspot.com",
+    messagingSenderId: "167972829836",
+    appId: "1:167972829836:web:bf33696df325cf30d619a9",
+}
   
-const app = initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfigBackup2)
 export const auth = getAuth(app)
 
 export const db = getFirestore(app)    
