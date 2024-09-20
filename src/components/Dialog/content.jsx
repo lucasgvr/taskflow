@@ -7,7 +7,6 @@ export function DialogContentWrapper() {
     const { currentUser } = useAuth();
 
     if (!currentUser) return null;
-    
     const departmentId = currentUser.department._key.path.segments[currentUser.department._key.path.segments.length - 1]
 
     return (

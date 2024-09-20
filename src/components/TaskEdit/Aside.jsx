@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 
 import { db } from "../../services/firebase"
-import { doc, deleteDoc } from "firebase/firestore"
+import { doc, deleteDoc, query, collection, where, getDocs } from "firebase/firestore"
 
 import Modal from "react-modal"
 
@@ -29,13 +29,28 @@ export function Aside({ updateTask, taskId, newDescription, newDeadline, newStat
     const handleDeleteTask = async (id) => {
         const taskDoc = doc(db, "tasks", id)
 
-        toast.success('Tarefa apagada com sucesso!')
+        const notificationsQuery = query(collection(db, "notifications"), where("taskId", "==", id));
 
-        await deleteDoc(taskDoc)
-
-        setTimeout(() => {
-            navigate('/home');
-        }, 5000);
+        try {
+            // Delete the task
+            await deleteDoc(taskDoc);
+    
+            // Find and delete the associated notifications
+            const notificationsSnapshot = await getDocs(notificationsQuery);
+            notificationsSnapshot.forEach(async (doc) => {
+                await deleteDoc(doc.ref); // Delete each notification document
+            });
+    
+            toast.success('Tarefa e notificações apagadas com sucesso!');
+    
+            // Navigate back after a delay
+            setTimeout(() => {
+                navigate('/home');
+            }, 5000);
+        } catch (error) {
+            toast.error('Erro ao apagar a tarefa ou notificações!');
+            console.error("Error deleting task or notifications:", error);
+        }
     }
 
     return (

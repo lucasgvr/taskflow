@@ -48,7 +48,7 @@ export function EmployeePage() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setEmployee(data);
-        setCurrentUser(data)
+        // setCurrentUser(data)
         setFirstName(data.firstName);
         setLastName(data.lastName);
         setEmail(data.email);
@@ -208,7 +208,7 @@ export function EmployeePage() {
             <p><strong>Telefone:</strong> {employee.phone}</p>
             <p><strong>Departamento:</strong> {departmentName}</p>
             <p><strong>Função:</strong> {employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}</p>
-            {currentUser && currentUser.email === employee.email && (
+            {currentUser && (currentUser.role === 'supervisor' || currentUser.email === employee.email) && (                
                 <>
                     <Button isOutlined onClick={() => setIsEditing(true)}>Editar</Button>
                     <Button onClick={handleSignOut}>Sair</Button>

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { useState, useEffect } from 'react'
 
-import { deleteDoc, doc, getDoc } from 'firebase/firestore'
+import { deleteDoc, doc, getDoc, query, collection, where, getDocs } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
 import Modal from "react-modal"
@@ -88,9 +88,28 @@ export function CardJob({ task }) {
     const handleDeleteTask = async (id) => {
         const taskDoc = doc(db, "tasks", id)
 
-        toast.success('Tarefa apagada com sucesso!')
+        const notificationsQuery = query(collection(db, "notifications"), where("taskId", "==", id));
 
-        await deleteDoc(taskDoc)
+        try {
+            // Delete the task
+            await deleteDoc(taskDoc);
+    
+            // Find and delete the associated notifications
+            const notificationsSnapshot = await getDocs(notificationsQuery);
+            notificationsSnapshot.forEach(async (doc) => {
+                await deleteDoc(doc.ref); // Delete each notification document
+            });
+    
+            toast.success('Tarefa e notificações apagadas com sucesso!');
+    
+            // Navigate back after a delay
+            setTimeout(() => {
+                navigate('/home');
+            }, 5000);
+        } catch (error) {
+            toast.error('Erro ao apagar a tarefa ou notificações!');
+            console.error("Error deleting task or notifications:", error);
+        }
     }
 
     return (

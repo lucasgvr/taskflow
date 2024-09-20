@@ -16,35 +16,48 @@ import { DepartmentPage } from "./pages/DepartmentPage"
 
 import { ToastContainer } from "react-toastify"
 import { AuthProvider } from "./context/AuthContext"
+
 import { Dialog } from "./components/Dialog/dialog"
 import { DialogContentWrapper } from "./components/Dialog/content"
+import { createContext } from "react"
+
+import { useState } from "react"
+
+export const DialogContext = createContext()
 
 function App() {
+    const [isDialogOpen, setDialogOpen] = useState(false);
+
+    const openDialog = () => setDialogOpen(true);
+    const closeDialog = () => setDialogOpen(false);
+    
     return (
         <BrowserRouter>
             <AuthProvider>
-                <Dialog>
-                    <Routes>
-                        <Route exact path="/" element={ <LoginPage /> } />
-                        <Route exact path="/home" element={ <HomePage /> } />
-                        <Route exact path="/edit/:id" element={ <TaskEditPage /> } />
-                        <Route exact path="/profile" element={ <ProfilePage /> } />
-                        <Route exact path="/add" element={ <AddTaskPage /> } />
-                        <Route exact path="/account/create" element={ <CreateAccountPage /> } />
+                <DialogContext.Provider value={{ isDialogOpen, openDialog, closeDialog }}>
+                    <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+                        <Routes>
+                            <Route exact path="/" element={ <LoginPage /> } />
+                            <Route exact path="/home" element={ <HomePage /> } />
+                            <Route exact path="/edit/:id" element={ <TaskEditPage /> } />
+                            <Route exact path="/profile" element={ <ProfilePage /> } />
+                            <Route exact path="/add" element={ <AddTaskPage /> } />
+                            <Route exact path="/account/create" element={ <CreateAccountPage /> } />
 
-                        <Route exact path="/choose" element={ <ChoicePage /> } />
-                        <Route exact path="/employees" element={ <EmployeesPage /> } />
-                        <Route exact path="/employees/new" element={ <AddEmployeePage /> } />
-                        <Route exact path="/employees/:employeeId" element={ <EmployeePage/> } />
+                            <Route exact path="/choose" element={ <ChoicePage /> } />
+                            <Route exact path="/employees" element={ <EmployeesPage /> } />
+                            <Route exact path="/employees/new" element={ <AddEmployeePage /> } />
+                            <Route exact path="/employees/:employeeId" element={ <EmployeePage/> } />
 
-                        <Route exact path="/departments" element={ <DepartmentsPage /> } />
-                        <Route exact path="/departments/new" element={ <AddDepartmentPage /> } />
-                        <Route exact path="/departments/:departmentId" element={ <DepartmentPage /> } />
+                            <Route exact path="/departments" element={ <DepartmentsPage /> } />
+                            <Route exact path="/departments/new" element={ <AddDepartmentPage /> } />
+                            <Route exact path="/departments/:departmentId" element={ <DepartmentPage /> } />
 
-                    </Routes>
+                        </Routes>
 
-                    <DialogContentWrapper />
-                </Dialog>
+                        <DialogContentWrapper />
+                    </Dialog>
+                </DialogContext.Provider>
             
                 <ToastContainer
                     position="top-center"

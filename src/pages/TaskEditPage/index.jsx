@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useDepartments } from '../../hooks/useDepartments'
 import { useEmployees } from '../../hooks/useEmployees'
 
-import { doc, updateDoc, getDoc } from 'firebase/firestore'
+import { doc, updateDoc, getDoc, collection, addDoc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
 import { Button } from '../../components/Button'
@@ -89,6 +89,18 @@ export function TaskEditPage() {
             assign: assignRef || task.assign,
             notes: updatedNotes || task.notes
         }
+
+        const notificationsCollectionRef = collection(db, "notifications")
+
+        const notification = {
+            assignId: assignRef || task.assign,
+            taskId: id,
+            message: `A tarefa "${newDescription || task.description}" foi atualizada`,
+            read: false,
+            createdAt: new Date(),
+        }
+
+        await addDoc(notificationsCollectionRef, notification)
 
         await updateDoc(taskDoc, newFields)
 
