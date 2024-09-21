@@ -1,4 +1,4 @@
-import { useTasks } from '../../hooks/useTasks.js'
+import { getTasks } from '../../hooks/useTasks.js'
 import { useDepartments } from '../../hooks/useDepartments.js'
 import { useEmployees } from '../../hooks/useEmployees.js'
 
@@ -19,15 +19,19 @@ import { Aside } from '../../components/AddTask/Aside.jsx'
 
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function AddTaskPage() {
+	const queryClient = useQueryClient()
+
 	const [newDescription, setNewDescription] = useState('')
 	const [newDeadline, setNewDeadline] = useState('')
 	const [newAssign, setNewAssign] = useState('')
 
-	const { tasksCollectionRef } = useTasks()
 	const { departments } = useDepartments()
 	const { employees } = useEmployees()
+
+	const tasksCollectionRef = collection(db, 'tasks')
 
 	const navigate = useNavigate()
 
@@ -37,7 +41,7 @@ export function AddTaskPage() {
 			return
 		}
 
-		const deadlineDate = new Date(newDeadline + 'T00:00:00')
+		const deadlineDate = new Date(`${newDeadline}T00:00:00`)
 		const today = new Date()
 		today.setHours(0, 0, 0, 0)
 		deadlineDate.setHours(0, 0, 0, 0)
@@ -72,11 +76,13 @@ export function AddTaskPage() {
 
 			await addDoc(notificationsCollectionRef, notification)
 
+			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+
 			toast.success('Tarefa adicionada com sucesso!')
 
 			setTimeout(() => {
 				navigate('/home')
-			}, 5000)
+			}, 2500)
 		} catch (error) {
 			console.error('Erro ao adicionar tarefa:', error)
 			toast.error('Ocorreu um erro ao adicionar a tarefa.')
@@ -112,7 +118,7 @@ export function AddTaskPage() {
 
 			<ToastContainer
 				position="top-center"
-				autoClose={5000}
+				autoClose={2500}
 				hideProgressBar={false}
 				newestOnTop={true}
 				closeOnClick

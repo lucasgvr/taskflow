@@ -1,17 +1,24 @@
-import { useNavigate } from 'react-router-dom'
-
-import { useState, useEffect } from 'react'
-
 import {
 	deleteDoc,
 	doc,
-	getDoc,
 	query,
 	collection,
 	where,
 	getDocs,
 } from 'firebase/firestore'
+
 import { db } from '../../services/firebase'
+
+import { useState } from 'react'
+
+import { useAuth } from '../../hooks/useAuth'
+
+import { useQuery } from '@tanstack/react-query'
+
+import { useQueryClient } from '@tanstack/react-query'
+import { fetchAssignDetails, formatDeadline } from '../../hooks/useTasks'
+
+import { useNavigate } from 'react-router-dom'
 
 import Modal from 'react-modal'
 
@@ -39,101 +46,44 @@ import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import '../../styles/modal.scss'
-import { useAuth } from '../../hooks/useAuth'
 
 export function CardJob({ task }) {
+	const queryClient = useQueryClient()
 	Modal.setAppElement('#root')
 
 	const [deleteTaskModalIsOpen, setDeleteTaskModalIsOpen] = useState(false)
-
-	const [assignName, setAssignName] = useState('')
-	const [assignType, setAssignType] = useState('')
-	const [formattedDeadline, setFormattedDeadline] = useState('')
 
 	const navigate = useNavigate()
 
 	const { currentUser } = useAuth()
 
-	useEffect(() => {
-		async function fetchAssignDetails() {
-			if (task.assign) {
-				const assignDoc = await getDoc(task.assign)
-				if (assignDoc.exists()) {
-					const isDepartment = task.assign.path.includes('departments')
-					setAssignName(
-						isDepartment
-							? assignDoc.data().name
-							: `${assignDoc.data().firstName} ${assignDoc.data().lastName}` || 'N/A'
-					)
-					setAssignType(isDepartment ? 'Departamento' : 'Funcionário')
-				} else {
-					setAssignName('Sem atribuição')
-					setAssignType('')
-				}
-			}
-		}
+	const { data: assignDetails } = useQuery({
+		queryKey: ['assignDetails', task.assign?.path],
+		queryFn: () => fetchAssignDetails(task),
+		staleTime: 1000 * 60,
+	})
 
-		fetchAssignDetails()
+	const formattedDeadline = formatDeadline(task)
 
-		function formatDeadline() {
-			if (task.status === 'Encerrada') {
-				setFormattedDeadline('Finalizada')
-				return
-			}
-
-			const deadlineDate = new Date(task.deadline + 'T00:00:00') // Ensuring the time is set to midnight
-			const today = new Date()
-			const tomorrow = new Date(today)
-			tomorrow.setDate(today.getDate() + 1)
-
-			today.setHours(0, 0, 0, 0)
-			tomorrow.setHours(0, 0, 0, 0)
-			deadlineDate.setHours(0, 0, 0, 0)
-
-			if (deadlineDate.getTime() === today.getTime()) {
-				setFormattedDeadline('Hoje')
-			} else if (deadlineDate.getTime() === tomorrow.getTime()) {
-				setFormattedDeadline('Amanhã')
-			} else {
-				const timeDifference = deadlineDate.getTime() - today.getTime()
-				const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24))
-
-				if (daysDifference > 0) {
-					setFormattedDeadline(`${daysDifference} dias`)
-				} else {
-					setFormattedDeadline('Atrasada')
-				}
-			}
-		}
-
-		formatDeadline()
-		// eslint-disable-next-line
-	}, [])
-
-	const handleDeleteTask = async id => {
+	async function handleDeleteTask(id) {
 		const taskDoc = doc(db, 'tasks', id)
 
-		const notificationsQuery = query(
-			collection(db, 'notifications'),
-			where('taskId', '==', id)
-		)
-
 		try {
-			// Delete the task
 			await deleteDoc(taskDoc)
 
-			// Find and delete the associated notifications
-			const notificationsSnapshot = await getDocs(notificationsQuery)
-			notificationsSnapshot.forEach(async doc => {
-				await deleteDoc(doc.ref) // Delete each notification document
-			})
+			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+
+			const notificationsSnapshot = await getDocs(
+				query(collection(db, 'notifications'), where('taskId', '==', id))
+			)
+
+			for (const doc of notificationsSnapshot.docs) {
+				await deleteDoc(doc.ref)
+			}
 
 			toast.success('Tarefa e notificações apagadas com sucesso!')
 
-			// Navigate back after a delay
-			setTimeout(() => {
-				navigate('/home')
-			}, 5000)
+			setDeleteTaskModalIsOpen(false)
 		} catch (error) {
 			toast.error('Erro ao apagar a tarefa ou notificações!')
 			console.error('Error deleting task or notifications:', error)
@@ -142,7 +92,7 @@ export function CardJob({ task }) {
 
 	return (
 		<Container>
-			<BoxId></BoxId>
+			<BoxId />
 			<BoxTitle>
 				<JobTitle>{task.description}</JobTitle>
 			</BoxTitle>
@@ -152,9 +102,11 @@ export function CardJob({ task }) {
 			</BoxDeadline>
 			<BoxDeadline>
 				<Title>Atribuído à</Title>
-				<SubTitle>
-					{assignName} {assignType ? `(${assignType})` : ''}
-				</SubTitle>
+				{assignDetails && (
+					<SubTitle>
+						{assignDetails.name} ({assignDetails.type})
+					</SubTitle>
+				)}
 			</BoxDeadline>
 			<BoxStatus>
 				<StatusWrapper status={task.status}>

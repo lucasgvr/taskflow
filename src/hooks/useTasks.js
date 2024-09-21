@@ -1,23 +1,61 @@
-import { useState, useEffect } from 'react'
-
 import { db } from '../services/firebase'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, getDoc } from 'firebase/firestore'
 
-export function useTasks() {
-	const [tasks, setTasks] = useState([])
+export async function getTasks() {
+	const collectionRef = collection(db, 'tasks')
+	const snapshot = await getDocs(collectionRef)
 
-	const tasksCollectionRef = collection(db, 'tasks')
+	const tasksArray = snapshot.docs.map(task => ({
+		id: task.id,
+		...task.data(),
+	}))
 
-	useEffect(() => {
-		const getTasks = async () => {
-			const data = await getDocs(tasksCollectionRef)
+	return tasksArray
+}
 
-			setTasks(data.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+export async function fetchAssignDetails(task) {
+	if (task.assign) {
+		const assignDoc = await getDoc(task.assign)
+		if (assignDoc.exists()) {
+			const isDepartment = task.assign.path.includes('departments')
+			return {
+				name: isDepartment
+					? assignDoc.data().name
+					: `${assignDoc.data().firstName} ${assignDoc.data().lastName}`,
+				type: isDepartment ? 'Departamento' : 'Funcionário',
+			}
 		}
 
-		getTasks()
-		//eslint-disable-next-line
-	}, [tasks])
+		return { name: 'Sem atribuição', type: '' }
+	}
 
-	return { tasks, tasksCollectionRef }
+	return { name: 'Sem atribuição', type: '' }
+}
+
+export function formatDeadline(task) {
+	if (task.status === 'Encerrada') {
+		return 'Finalizada'
+	}
+
+	const deadlineDate = new Date(`${task.deadline}T00:00:00`)
+	const today = new Date()
+	const tomorrow = new Date(today)
+	tomorrow.setDate(today.getDate() + 1)
+
+	today.setHours(0, 0, 0, 0)
+	tomorrow.setHours(0, 0, 0, 0)
+	deadlineDate.setHours(0, 0, 0, 0)
+
+	if (deadlineDate.getTime() === today.getTime()) {
+		return 'Hoje'
+	}
+
+	if (deadlineDate.getTime() === tomorrow.getTime()) {
+		return 'Amanhã'
+	}
+
+	const timeDifference = deadlineDate.getTime() - today.getTime()
+	const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24))
+
+	return daysDifference > 0 ? `${daysDifference} dias` : 'Atrasada'
 }

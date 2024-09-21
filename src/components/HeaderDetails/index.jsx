@@ -1,4 +1,4 @@
-import { useTasks } from '../../hooks/useTasks'
+import { getTasks } from '../../hooks/useTasks'
 
 import { Box, Image, Text } from '@chakra-ui/react'
 
@@ -10,8 +10,7 @@ import { Link, Navigate } from 'react-router-dom'
 import PlusIcon from '../../assets/plus-24.svg'
 import { useAuth } from '../../hooks/useAuth'
 
-export function HeaderDetails() {
-	const { tasks } = useTasks()
+export function HeaderDetails({ tasks }) {
 	const { currentUser } = useAuth()
 
 	const countOpen = tasks.filter(task => {

@@ -298,7 +298,7 @@ export function EmployeePage() {
 
 			<ToastContainer
 				position="top-center"
-				autoClose={5000}
+				autoClose={2500}
 				hideProgressBar={false}
 				newestOnTop={true}
 				closeOnClick
