@@ -44,9 +44,7 @@ export function DialogTitle(props) {
 	)
 }
 
-export function DialogDescription(
-	props
-) {
+export function DialogDescription(props) {
 	return (
 		<DialogPrimitive.DialogDescription
 			{...props}

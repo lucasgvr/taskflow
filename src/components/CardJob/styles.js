@@ -86,10 +86,10 @@ export const StatusWrapper = styled.div`
   align-items: center;
   border-radius: 40px;
 
-  background: ${({ status }) => status === "Em andamento" ? "var(--green-100)" : "var(--red-100)"};
+  background: ${({ status }) => (status === 'Em andamento' ? 'var(--green-100)' : 'var(--red-100)')};
 
   h3 {
-    color: ${({ status }) => status === "Em andamento" ? "var(--green)" : "var(--red)"};
+    color: ${({ status }) => (status === 'Em andamento' ? 'var(--green)' : 'var(--red)')};
   }
 `
 

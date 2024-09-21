@@ -1,125 +1,163 @@
-import { Button } from "../../components/Button";
-import { Header } from "../../components/Header";
+import { Button } from '../../components/Button'
+import { Header } from '../../components/Header'
 
-import { useState } from "react";
+import { useState } from 'react'
 
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom'
 
-import { Box, Text, Input} from "@chakra-ui/react"
+import { Box, Text, Input } from '@chakra-ui/react'
 
-import { db } from "../../services/firebase"
-import { collection, addDoc, query, getDocs, where } from "firebase/firestore"
+import { db } from '../../services/firebase'
+import { collection, addDoc, query, getDocs, where } from 'firebase/firestore'
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
 
-import { toast, ToastContainer } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
-
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export function AddDepartmentPage() {
-    const navigate = useNavigate();
+	const navigate = useNavigate()
 
-    const [name, setName] = useState('')
+	const [name, setName] = useState('')
 
-    async function handleAddDepartment(event) {
-        event.preventDefault()
+	async function handleAddDepartment(event) {
+		event.preventDefault()
 
-        try {
-            const q = query(collection(db, 'departments'), where('name', '==', name));
-            const querySnapshot = await getDocs(q);
-    
-            if (!querySnapshot.empty) {
-                toast.error('Nome do departamento já existe!');
-                return;
-            }
+		try {
+			const q = query(collection(db, 'departments'), where('name', '==', name))
+			const querySnapshot = await getDocs(q)
 
-            if (!name) {
-                toast.error('Nome do departamento não pode ser vazio!');
-                return;
-            }
-    
-            await addDoc(collection(db, 'departments'), {
-                name
-            });
-    
-            toast.success('Departamento adicionado com sucesso!');
-    
-            setTimeout(() => {
-                navigate('/departments');
-            }, 5000);
-        } catch (error) {
-            toast.error('Erro ao Adicionar Departamento');
-            console.error('Erro ao adicionar departamento: ', error);
-        }
-    }
+			if (!querySnapshot.empty) {
+				toast.error('Nome do departamento já existe!')
+				return
+			}
 
-    return (
-        <>
-            <Header />
-            
-            <Box as='main'>
-                <Box as='div'>
-                    <Box as='form' marginLeft='4rem' gap='2rem' display='flex'
-                    flexDirection='column' alignItems='center' justifyContent='center' onSubmit={handleAddDepartment}>
-                        <Box as='fieldset' border='none' mt='3.5rem'>
-                            <Text color='#5A5A66' fontWeight='600' fontSize='2rem' lineHeight='2.625rem'>
-                                Adicionar Departamento
-                            </Text>
+			if (!name) {
+				toast.error('Nome do departamento não pode ser vazio!')
+				return
+			}
 
-                            <Box as='div' height='1px' margin='1rem 0 2rem' backgroundColor='#E1E3E5'></Box>
+			await addDoc(collection(db, 'departments'), {
+				name,
+			})
 
-                            <Box as='div' display='flex' flexDirection='row' gap='1.5rem' mt='1.5rem'>
-                                <Box as='div' flex='1'>
-                                    <Box as='label' display='inline-block' fontWeight='500' color='#787880'>
-                                        Nome
-                                    </Box>
-                                    <Input 
-                                        type='text' 
-                                        fontWeight='500' 
-                                        backgroundColor='#FCFDFF' 
-                                        border='1px solid #E1E3E6'
-                                        borderRadius='0.313rem' 
-                                        padding='0.5rem 1.5rem' 
-                                        width='100%' 
-                                        color='#5A5A66' 
-                                        mt='1rem' 
-                                        onChange={event => setName(event.target.value)}
-                                    />
-                                </Box>
-                            </Box>
-                        </Box>
+			toast.success('Departamento adicionado com sucesso!')
 
-                        <Box display='flex' flexDirection='column' gap='1rem' mt='2rem'>
-                            <Button>
-                                <Box display='flex' justifyContent='center' alignItems='center' width='20rem'>
-                                    <Text>Adicionar Departamento</Text>
-                                </Box>
-                            </Button>
+			setTimeout(() => {
+				navigate('/departments')
+			}, 5000)
+		} catch (error) {
+			toast.error('Erro ao Adicionar Departamento')
+			console.error('Erro ao adicionar departamento: ', error)
+		}
+	}
 
-                            <Link to='/departments'>
-                                <Button isOutlined>
-                                    <Box display='flex' justifyContent='center' alignItems='center' width='20rem'>
-                                        <Text>Listar Departamentos</Text>
-                                    </Box>
-                                </Button>
-                            </Link>
-                        </Box>
-                    </Box>
-                </Box>
-            </Box>
+	return (
+		<>
+			<Header />
 
-            <ToastContainer
-                position="top-center"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={true}
-                closeOnClick
-                rtl={false}
-                draggable
-                theme="light"
-                pauseOnFocusLoss={false}
-                pauseOnHover={false}
-            />
-        </>
-    )
+			<Box as="main">
+				<Box as="div">
+					<Box
+						as="form"
+						marginLeft="4rem"
+						gap="2rem"
+						display="flex"
+						flexDirection="column"
+						alignItems="center"
+						justifyContent="center"
+						onSubmit={handleAddDepartment}
+					>
+						<Box as="fieldset" border="none" mt="3.5rem">
+							<Text
+								color="#5A5A66"
+								fontWeight="600"
+								fontSize="2rem"
+								lineHeight="2.625rem"
+							>
+								Adicionar Departamento
+							</Text>
+
+							<Box
+								as="div"
+								height="1px"
+								margin="1rem 0 2rem"
+								backgroundColor="#E1E3E5"
+							></Box>
+
+							<Box
+								as="div"
+								display="flex"
+								flexDirection="row"
+								gap="1.5rem"
+								mt="1.5rem"
+							>
+								<Box as="div" flex="1">
+									<Box
+										as="label"
+										display="inline-block"
+										fontWeight="500"
+										color="#787880"
+									>
+										Nome
+									</Box>
+									<Input
+										type="text"
+										fontWeight="500"
+										backgroundColor="#FCFDFF"
+										border="1px solid #E1E3E6"
+										borderRadius="0.313rem"
+										padding="0.5rem 1.5rem"
+										width="100%"
+										color="#5A5A66"
+										mt="1rem"
+										onChange={event => setName(event.target.value)}
+									/>
+								</Box>
+							</Box>
+						</Box>
+
+						<Box display="flex" flexDirection="column" gap="1rem" mt="2rem">
+							<Button>
+								<Box
+									display="flex"
+									justifyContent="center"
+									alignItems="center"
+									width="20rem"
+								>
+									<Text>Adicionar Departamento</Text>
+								</Box>
+							</Button>
+
+							<Link to="/departments">
+								<Button isOutlined>
+									<Box
+										display="flex"
+										justifyContent="center"
+										alignItems="center"
+										width="20rem"
+									>
+										<Text>Listar Departamentos</Text>
+									</Box>
+								</Button>
+							</Link>
+						</Box>
+					</Box>
+				</Box>
+			</Box>
+
+			<ToastContainer
+				position="top-center"
+				autoClose={5000}
+				hideProgressBar={false}
+				newestOnTop={true}
+				closeOnClick
+				rtl={false}
+				draggable
+				theme="light"
+				pauseOnFocusLoss={false}
+				pauseOnHover={false}
+			/>
+		</>
+	)
 }

@@ -1,11 +1,11 @@
-import { Dashboard } from "../../components/Dashboard"
-import { Header } from "../../components/Header"
+import { Dashboard } from '../../components/Dashboard'
+import { Header } from '../../components/Header'
 
 export function HomePage() {
-    return (
-        <>
-            <Header />
-            <Dashboard />
-        </>
-    )
+	return (
+		<>
+			<Header />
+			<Dashboard />
+		</>
+	)
 }

@@ -1,27 +1,27 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect } from 'react'
 
-import { db } from "../services/firebase"
-import { collection, getDocs } from "firebase/firestore"
+import { db } from '../services/firebase'
+import { collection, getDocs } from 'firebase/firestore'
 
 export function useEmployees() {
-    const [employees, setEmployees] = useState([])
+	const [employees, setEmployees] = useState([])
 
-    const employeesCollectionRef = collection(db, "employees")
+	const employeesCollectionRef = collection(db, 'employees')
 
-    useEffect(() => {
-        const getEmployees = async () => {
-            const data = await getDocs(employeesCollectionRef)
+	useEffect(() => {
+		const getEmployees = async () => {
+			const data = await getDocs(employeesCollectionRef)
 
-            const employeesList = data.docs.map((doc) => ({...doc.data(), id: doc.id}))
+			const employeesList = data.docs.map(doc => ({ ...doc.data(), id: doc.id }))
 
-            employeesList.sort((a, b) => a.firstName.localeCompare(b.firstName));
-            
-            setEmployees(employeesList);
-        }
+			employeesList.sort((a, b) => a.firstName.localeCompare(b.firstName))
 
-        getEmployees()
-        //eslint-disable-next-line
-    }, [employees])
+			setEmployees(employeesList)
+		}
 
-    return { employees, employeesCollectionRef}
+		getEmployees()
+		//eslint-disable-next-line
+	}, [employees])
+
+	return { employees, employeesCollectionRef }
 }
