@@ -1,18 +1,22 @@
 import { Box, Text, Input, Select } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
 import { getDepartments } from '../../hooks/useDepartments'
+import { getEmployees } from '../../hooks/useEmployees'
 
-export function Main({
-	setNewDescription,
-	setNewDeadline,
-	setNewAssign,
-	employees,
-}) {
+export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
 	const { data: departments } = useQuery({
 		queryKey: ['departments'],
 		queryFn: getDepartments,
 		staleTime: 1000 * 60 * 5,
 	})
+
+	const { data: employees } = useQuery({
+		queryKey: ['employees'],
+		queryFn: getEmployees,
+		staleTime: 1000 * 60 * 5,
+	})
+
+	console.log(employees)
 
 	return (
 		<Box as="main">
@@ -101,11 +105,15 @@ export function Main({
 										)}
 									</optgroup>
 									<optgroup label="Funcionários">
-										{employees.map((emp, index) => (
-											<option key={index} value={`employee:${emp.id}`}>
-												{emp.firstName} {emp.lastName}
-											</option>
-										))}
+										{employees ? (
+											employees.map(emp => (
+												<option key={employees.indexOf(emp)} value={`employee:${emp.id}`}>
+													{emp.firstName} {emp.lastName}
+												</option>
+											))
+										) : (
+											<option disabled>Nenhum funcionário disponível</option>
+										)}
 									</optgroup>
 								</Select>
 							</Box>

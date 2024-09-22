@@ -1,8 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 
-import { useEmployees } from '../../hooks/useEmployees'
-
 import { doc, updateDoc, collection, addDoc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
@@ -44,7 +42,6 @@ export function TaskEditPage() {
 	const params = useParams()
 	const taskId = params.id
 
-	const { employees } = useEmployees()
 	const { currentUser } = useAuth()
 
 	const navigate = useNavigate()
@@ -155,7 +152,6 @@ export function TaskEditPage() {
 					setNewDeadline={setNewDeadline}
 					setNewStatus={setNewStatus}
 					setNewAssign={setNewAssign}
-					employees={employees}
 				/>
 				<Aside
 					updateTask={updateTask}

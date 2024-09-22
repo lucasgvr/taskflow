@@ -9,24 +9,17 @@ import { Link } from 'react-router-dom'
 
 import { Box, Text, Input } from '@chakra-ui/react'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getDepartments } from '../../hooks/useDepartments'
-
-import { db } from '../../services/firebase'
-import {
-	collection,
-	doc,
-	addDoc,
-	updateDoc,
-	arrayUnion,
-} from 'firebase/firestore'
 
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import { useNavigate } from 'react-router-dom'
+import { addEmployee } from '../../hooks/useEmployees'
 
 export function AddEmployeePage() {
+	const queryClient = useQueryClient()
 	const navigate = useNavigate()
 
 	const [firstName, setFirstName] = useState('')
@@ -68,9 +61,9 @@ export function AddEmployeePage() {
 
 		const isCpfValid = /^\d{11}$/.test(cpf)
 
-		const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-		if (!isEmailValid.test(email)) {
+		if (!isEmailValid) {
 			toast.error('Email inválido')
 			return
 		}
@@ -86,28 +79,27 @@ export function AddEmployeePage() {
 		}
 
 		try {
-			const departmentRef = doc(db, 'departments', department)
+			await addEmployee(
+				{
+					firstName,
+					lastName,
+					email,
+					password,
+					cpf,
+					phone,
+					role,
+					image: '',
+				},
+				department
+			)
 
-			const employeeRef = await addDoc(collection(db, 'employees'), {
-				firstName,
-				lastName,
-				email,
-				password,
-				cpf,
-				phone,
-				department: departmentRef,
-				role,
-				image: '',
-			})
-
-			await updateDoc(departmentRef, {
-				employees: arrayUnion(employeeRef),
-			})
+			queryClient.invalidateQueries({ queryKey: ['employees'] })
+			queryClient.invalidateQueries({ queryKey: ['department', department] })
 
 			toast.success('Funcionário adicionado com sucesso!')
 			setTimeout(() => {
 				navigate('/employees')
-			}, 5000)
+			}, 2500)
 		} catch (error) {
 			toast.error('Erro ao adicionar funcionário')
 			console.error('Erro ao adicionar funcionário:', error)
@@ -115,15 +107,15 @@ export function AddEmployeePage() {
 	}
 
 	function formatCPF(value) {
-		value = value.replace(/\D/g, '')
+		let formattedValue = value.replace(/\D/g, '')
 
-		value = value.slice(0, 11)
+		formattedValue = value.slice(0, 11)
 
-		value = value.replace(/(\d{3})(\d)/, '$1.$2')
-		value = value.replace(/(\d{3})(\d)/, '$1.$2')
-		value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+		formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2')
+		formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2')
+		formattedValue = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
 
-		return value
+		return formattedValue
 	}
 
 	const handleCpfChange = e => {
@@ -133,13 +125,13 @@ export function AddEmployeePage() {
 	}
 
 	function formatPhoneNumber(value) {
-		value = value.replace(/\D/g, '')
+		let formattedValue = value.replace(/\D/g, '')
 
-		value = value.slice(0, 11)
+		formattedValue = value.slice(0, 11)
 
-		value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+		formattedValue = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
 
-		return value
+		return formattedValue
 	}
 
 	const handlePhoneChange = e => {
@@ -357,7 +349,7 @@ export function AddEmployeePage() {
 									mt="1rem"
 									onChange={event => setDepartment(event.target.value)}
 								>
-									{departments.map(department => (
+									{departments?.map(department => (
 										<option key={department.id} value={department.id}>
 											{department.name}
 										</option>

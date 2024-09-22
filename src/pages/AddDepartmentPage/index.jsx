@@ -8,14 +8,18 @@ import { Link } from 'react-router-dom'
 import { Box, Text, Input } from '@chakra-ui/react'
 
 import { db } from '../../services/firebase'
-import { collection, addDoc, query, getDocs, where } from 'firebase/firestore'
+import { collection, query, getDocs, where } from 'firebase/firestore'
 
 import { useNavigate } from 'react-router-dom'
 
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { addDepartment } from '../../hooks/useDepartments'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function AddDepartmentPage() {
+	const queryClient = useQueryClient()
+
 	const navigate = useNavigate()
 
 	const [name, setName] = useState('')
@@ -37,15 +41,15 @@ export function AddDepartmentPage() {
 				return
 			}
 
-			await addDoc(collection(db, 'departments'), {
-				name,
-			})
+			await addDepartment(name)
+
+			queryClient.invalidateQueries({ queryKey: ['departments'] })
 
 			toast.success('Departamento adicionado com sucesso!')
 
 			setTimeout(() => {
 				navigate('/departments')
-			}, 5000)
+			}, 2500)
 		} catch (error) {
 			toast.error('Erro ao Adicionar Departamento')
 			console.error('Erro ao adicionar departamento: ', error)

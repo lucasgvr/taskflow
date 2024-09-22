@@ -7,6 +7,7 @@ import { Loader } from '../Loader'
 import { getDepartments } from '../../hooks/useDepartments'
 import { useQuery } from '@tanstack/react-query'
 import { getAssignName } from '../../hooks/useTasks'
+import { getEmployees } from '../../hooks/useEmployees'
 
 export function Main({
 	task,
@@ -14,7 +15,6 @@ export function Main({
 	setNewDeadline,
 	setNewStatus,
 	setNewAssign,
-	employees,
 }) {
 	const [assignName, setAssignName] = useState('')
 
@@ -23,6 +23,12 @@ export function Main({
 	const { data: departments } = useQuery({
 		queryKey: ['departments'],
 		queryFn: getDepartments,
+		staleTime: 1000 * 60 * 5,
+	})
+
+	const { data: employees } = useQuery({
+		queryKey: ['employees'],
+		queryFn: getEmployees,
 		staleTime: 1000 * 60 * 5,
 	})
 
@@ -149,7 +155,7 @@ export function Main({
 									<option value="">Selecionar</option>
 									<optgroup label="Departamentos">
 										{departments ? (
-											departments.map((dept, index) => (
+											departments.map(dept => (
 												<option
 													key={departments.indexOf(dept)}
 													value={`department:${dept.id}`}
@@ -162,11 +168,15 @@ export function Main({
 										)}
 									</optgroup>
 									<optgroup label="Funcionários">
-										{employees.map((emp, index) => (
-											<option key={index} value={`employee:${emp.id}`}>
-												{emp.firstName} {emp.lastName}
-											</option>
-										))}
+										{employees ? (
+											employees.map(emp => (
+												<option key={employees.indexOf(emp)} value={`employee:${emp.id}`}>
+													{emp.firstName} {emp.lastName}
+												</option>
+											))
+										) : (
+											<option disabled>Nenhum funcionário disponível</option>
+										)}
 									</optgroup>
 								</Select>
 							</Box>

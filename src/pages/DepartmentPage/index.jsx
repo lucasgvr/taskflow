@@ -1,23 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Box, Text, Input } from '@chakra-ui/react'
 
 import { Header } from '../../components/Header'
 import { Button } from '../../components/Button'
-
-import {
-	doc,
-	getDoc,
-	updateDoc,
-	query,
-	collection,
-	where,
-	getDocs,
-	arrayRemove,
-	deleteDoc,
-} from 'firebase/firestore'
-import { db } from '../../services/firebase'
 
 import { Loader } from '../../components/Loader'
 
@@ -33,14 +20,20 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import Modal from 'react-modal'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+	checkIfDepartmentsNameExist,
+	getDepartment,
+	updateDepartmentName,
+} from '../../hooks/useDepartments'
+import { deleteEmployee } from '../../hooks/useEmployees'
 
 export function DepartmentPage() {
+	const queryClient = useQueryClient()
+
 	Modal.setAppElement('#root')
 
 	const { departmentId } = useParams()
-
-	const [department, setDepartment] = useState('')
-	const [employees, setEmployees] = useState([])
 
 	const [isEditing, setIsEditing] = useState(false)
 	const [departmentName, setDepartmentName] = useState('')
@@ -60,31 +53,20 @@ export function DepartmentPage() {
 		setSelectedEmployee(null)
 	}
 
-	const handleDeleteEmployee = async () => {
+	const { data: department } = useQuery({
+		queryKey: ['department', departmentId],
+		queryFn: () => getDepartment(departmentId),
+		staleTime: 1000 * 60 * 5,
+	})
+
+	async function handleDeleteEmployee() {
 		if (selectedEmployee) {
 			try {
-				// Reference to the employee document
-				const docRef = doc(db, 'employees', selectedEmployee)
+				await deleteEmployee(selectedEmployee)
 
-				// Fetch the employee document to get the department reference
-				const employeeDoc = await getDoc(docRef)
-				if (employeeDoc.exists()) {
-					const employeeData = employeeDoc.data()
-					const departmentRef = employeeData.department
+				queryClient.invalidateQueries({ queryKey: ['department', departmentId] })
 
-					// Remove the employee reference from the department's employees array
-					if (departmentRef) {
-						await updateDoc(departmentRef, {
-							employees: arrayRemove(docRef),
-						})
-					}
-
-					// Delete the employee document
-					await deleteDoc(docRef)
-					toast.success('Funcionário excluído com sucesso!')
-				} else {
-					toast.error('Funcionário não encontrado!')
-				}
+				toast.success('Funcionário excluído com sucesso!')
 			} catch (error) {
 				toast.error('Erro ao excluir funcionário!')
 				console.error('Erro ao excluir funcionário: ', error)
@@ -93,79 +75,12 @@ export function DepartmentPage() {
 
 				setTimeout(() => {
 					navigate('/departments')
-				}, 5000)
+				}, 2500)
 			}
 		}
 	}
 
-	useEffect(() => {
-		async function fetchDepartment() {
-			try {
-				const departmentRef = doc(db, 'departments', departmentId)
-				const departmentSnapshot = await getDoc(departmentRef)
-
-				if (departmentSnapshot.exists()) {
-					const departmentData = departmentSnapshot.data()
-					setDepartment(departmentData)
-
-					if (departmentData.employees) {
-						fetchEmployees(departmentData.employees)
-					}
-				} else {
-					toast.error('Erro ao carregar departamento')
-					setTimeout(() => {
-						navigate('/departments')
-					}, 5000)
-					setDepartment(null)
-				}
-			} catch (error) {
-				toast.error('Erro ao carregar departamento')
-				console.error('Erro ao carregar departamento: ', error)
-				setTimeout(() => {
-					navigate('/departments')
-				}, 5000)
-			}
-		}
-
-		async function fetchEmployees(employeeRefs) {
-			try {
-				const employeePromises = employeeRefs.map(employeeRef =>
-					getDoc(employeeRef)
-				)
-
-				const employeeSnapshots = await Promise.all(employeePromises)
-
-				const employeeData = employeeSnapshots
-					.map(snapshot => {
-						if (snapshot.exists()) {
-							return {
-								id: snapshot.id, // Add the document ID here
-								...snapshot.data(), // Spread the document data
-							}
-						} else {
-							console.log('Não existe funcionário')
-							return null
-						}
-					})
-					.filter(data => data !== null)
-
-				const sortedEmployeeData = employeeData.sort((a, b) => {
-					if (a.firstName < b.firstName) return -1
-					if (a.firstName > b.firstName) return 1
-					return 0
-				})
-
-				setEmployees(sortedEmployeeData)
-			} catch (error) {
-				console.error('Erro ao carregar funcionários:', error)
-			}
-		}
-
-		fetchDepartment()
-		// eslint-disable-next-line
-	}, [])
-
-	async function updateDepartmentName() {
+	async function handleUpdateDepartmentName() {
 		if (departmentId === 'bwLY5wnNiKoU0qZSeHQl') {
 			console.error('Este departamento não pode ser editado')
 			toast.error('Este departamento não pode ser editado')
@@ -175,32 +90,28 @@ export function DepartmentPage() {
 		}
 
 		try {
-			const departmentRef = doc(db, 'departments', departmentId)
-
-			const q = query(
-				collection(db, 'departments'),
-				where('name', '==', departmentName)
-			)
-			const querySnapshot = await getDocs(q)
-
-			if (!querySnapshot.empty) {
-				toast.error('Nome do departamento já existe!')
-				return
-			}
-
 			if (!departmentName) {
 				toast.error('Nome do departamento não pode ser vazio!')
 				return
 			}
 
-			await updateDoc(departmentRef, { name: departmentName })
+			if (await checkIfDepartmentsNameExist(departmentName)) {
+				toast.error('Nome do departamento já existe!')
+				return
+			}
+
+			await updateDepartmentName(departmentId, departmentName)
+
+			queryClient.invalidateQueries({ queryKey: ['department', departmentId] })
+			queryClient.invalidateQueries({ queryKey: ['departments'] })
+
 			toast.success('Nome do departamento atualizado com sucesso!')
-			setDepartmentName(departmentName)
+
 			setIsEditing(false)
 
 			setTimeout(() => {
 				navigate('/departments')
-			}, 5000)
+			}, 2500)
 		} catch (error) {
 			toast.error('Erro ao atualizar nome do departamento')
 			console.error('Erro ao atualizar nome do departamento:', error)
@@ -208,25 +119,25 @@ export function DepartmentPage() {
 	}
 
 	function formatCPF(value) {
-		value = value.replace(/\D/g, '')
+		let formattedValue = value.replace(/\D/g, '')
 
-		value = value.slice(0, 11)
+		formattedValue = value.slice(0, 11)
 
-		value = value.replace(/(\d{3})(\d)/, '$1.$2')
-		value = value.replace(/(\d{3})(\d)/, '$1.$2')
-		value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+		formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2')
+		formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2')
+		formattedValue = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
 
-		return value
+		return formattedValue
 	}
 
 	function formatPhoneNumber(value) {
-		value = value.replace(/\D/g, '')
+		let formattedValue = value.replace(/\D/g, '')
 
-		value = value.slice(0, 11)
+		formattedValue = value.slice(0, 11)
 
-		value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+		formattedValue = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
 
-		return value
+		return formattedValue
 	}
 
 	if (!department) {
@@ -267,7 +178,7 @@ export function DepartmentPage() {
 									<Text>Cancelar</Text>
 								</Box>
 							</Button>
-							<Button onClick={() => updateDepartmentName()}>
+							<Button onClick={handleUpdateDepartmentName}>
 								<Box display="flex" justifyContent="center" alignItems="center">
 									<Text>Salvar</Text>
 								</Box>
@@ -281,7 +192,7 @@ export function DepartmentPage() {
 						</Button>
 					)}
 				</div>
-				{employees.length > 0 ? (
+				{department.employees.length > 0 ? (
 					<div className="employeesList">
 						<h2>Funcionários:</h2>
 						<table>
@@ -296,7 +207,7 @@ export function DepartmentPage() {
 								</tr>
 							</thead>
 							<tbody>
-								{employees.map(employee => (
+								{department.employees.map(employee => (
 									<tr key={employee.id}>
 										<td>{employee.firstName}</td>
 										<td>{employee.lastName}</td>

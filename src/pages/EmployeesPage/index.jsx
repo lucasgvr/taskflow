@@ -1,5 +1,3 @@
-import { useEmployees } from '../../hooks/useEmployees'
-
 import { Link } from 'react-router-dom'
 
 import { Box, Text } from '@chakra-ui/react'
@@ -28,58 +26,19 @@ import './styles.scss'
 
 import Modal from 'react-modal'
 
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { deleteEmployee, getEmployees } from '../../hooks/useEmployees'
+
 export function EmployeesPage() {
+	const queryClient = useQueryClient()
+
 	Modal.setAppElement('#root')
 
-	const { employees } = useEmployees()
-
-	const [departments, setDepartments] = useState({})
-
-	useEffect(() => {
-		async function fetchDepartments() {
-			const departmentsData = {}
-
-			for (const employee of employees) {
-				if (employee.id) {
-					try {
-						const departmentName = await getDepartmentOfEmployee(employee.id)
-						departmentsData[employee.id] = departmentName
-					} catch (error) {
-						console.error(
-							`Erro ao encontrar departamento para o funcionário ${employee.id}:`,
-							error
-						)
-						departmentsData[employee.id] = 'Error ao encontrar departamento'
-					}
-				}
-			}
-
-			setDepartments(departmentsData)
-		}
-
-		async function getDepartmentOfEmployee(employeeId) {
-			const employeeDocRef = doc(db, 'employees', employeeId)
-			const employeeDocSnapshot = await getDoc(employeeDocRef)
-
-			if (employeeDocSnapshot.exists()) {
-				const employeeData = employeeDocSnapshot.data()
-				const departmentRef = employeeData.department
-
-				const departmentDocSnapshot = await getDoc(departmentRef)
-
-				if (!employeeDocSnapshot.exists()) {
-					return 'Departamento não encontrado'
-				}
-
-				const departmentData = departmentDocSnapshot.data()
-
-				return departmentData.name
-			}
-		}
-
-		fetchDepartments()
-		// eslint-disable-next-line
-	}, [departments])
+	const { data: employees } = useQuery({
+		queryKey: ['employees'],
+		queryFn: getEmployees,
+		staleTime: 1000 * 60 * 5,
+	})
 
 	const [modalIsOpen, setModalIsOpen] = useState(false)
 	const [selectedEmployee, setSelectedEmployee] = useState(null)
@@ -94,31 +53,21 @@ export function EmployeesPage() {
 		setSelectedEmployee(null)
 	}
 
-	const handleDeleteEmployee = async () => {
+	async function handleDeleteEmployee() {
 		if (selectedEmployee) {
 			try {
-				// Reference to the employee document
-				const docRef = doc(db, 'employees', selectedEmployee)
+				const employeeToDelete = employees.find(
+					employee => employee.id === selectedEmployee
+				)
 
-				// Fetch the employee document to get the department reference
-				const employeeDoc = await getDoc(docRef)
-				if (employeeDoc.exists()) {
-					const employeeData = employeeDoc.data()
-					const departmentRef = employeeData.department
+				await deleteEmployee(selectedEmployee)
 
-					// Remove the employee reference from the department's employees array
-					if (departmentRef) {
-						await updateDoc(departmentRef, {
-							employees: arrayRemove(docRef),
-						})
-					}
+				queryClient.invalidateQueries({ queryKey: ['employees'] })
+				queryClient.invalidateQueries({
+					queryKey: ['department', employeeToDelete.departmentId],
+				})
 
-					// Delete the employee document
-					await deleteDoc(docRef)
-					toast.success('Funcionário excluído com sucesso!')
-				} else {
-					toast.error('Funcionário não encontrado!')
-				}
+				toast.success('Funcionário excluído com sucesso!')
 			} catch (error) {
 				toast.error('Erro ao excluir funcionário!')
 				console.error('Erro ao excluir funcionário: ', error)
@@ -129,25 +78,25 @@ export function EmployeesPage() {
 	}
 
 	function formatCPF(value) {
-		value = value.replace(/\D/g, '')
+		let formattedValue = value.replace(/\D/g, '')
 
-		value = value.slice(0, 11)
+		formattedValue = value.slice(0, 11)
 
-		value = value.replace(/(\d{3})(\d)/, '$1.$2')
-		value = value.replace(/(\d{3})(\d)/, '$1.$2')
-		value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+		formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2')
+		formattedValue = value.replace(/(\d{3})(\d)/, '$1.$2')
+		formattedValue = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2')
 
-		return value
+		return formattedValue
 	}
 
 	function formatPhoneNumber(value) {
-		value = value.replace(/\D/g, '')
+		let formattedValue = value.replace(/\D/g, '')
 
-		value = value.slice(0, 11)
+		formattedValue = value.slice(0, 11)
 
-		value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+		formattedValue = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
 
-		return value
+		return formattedValue
 	}
 
 	return (
@@ -178,18 +127,14 @@ export function EmployeesPage() {
 							</tr>
 						</thead>
 						<tbody>
-							{employees.map(employee => (
+							{employees?.map(employee => (
 								<tr key={employee.id}>
 									<td>{employee.firstName}</td>
 									<td>{employee.lastName}</td>
 									<td>{employee.email}</td>
 									<td>{formatPhoneNumber(employee.phone)}</td>
 									<td>{formatCPF(employee.cpf)}</td>
-									<td>
-										{departments[employee.id]
-											? departments[employee.id]
-											: 'Carregando...'}
-									</td>
+									<td>{employee.department.name}</td>
 									<td>
 										{employee.role === 'supervisor' ? 'Supervisor' : 'Funcionário'}
 									</td>

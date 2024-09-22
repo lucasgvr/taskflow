@@ -9,16 +9,7 @@ import { MdModeEdit } from 'react-icons/md'
 import { MdDelete } from 'react-icons/md'
 
 import { useState } from 'react'
-import {
-	doc,
-	deleteDoc,
-	collection,
-	query,
-	where,
-	getDocs,
-	updateDoc,
-	arrayUnion,
-} from 'firebase/firestore'
+import { doc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 import Modal from 'react-modal'
 import { FaTrashAlt } from 'react-icons/fa'
@@ -28,10 +19,17 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import './styles.scss'
 
-import { useQuery } from '@tanstack/react-query'
-import { getDepartments } from '../../hooks/useDepartments'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+	deleteDepartment,
+	deleteDepartmentWithEmployees,
+	getDepartments,
+} from '../../hooks/useDepartments'
+import { getEmployeesByDepartment } from '../../hooks/useEmployees'
 
 export function DepartmentsPage() {
+	const queryClient = useQueryClient()
+
 	Modal.setAppElement('#root')
 
 	const { data: departments } = useQuery({
@@ -65,7 +63,7 @@ export function DepartmentsPage() {
 		setEmployeesInDepartment([])
 	}
 
-	const handleDeleteDepartment = async () => {
+	async function handleDeleteDepartment() {
 		if (selectedDepartment) {
 			if (selectedDepartment === 'bwLY5wnNiKoU0qZSeHQl') {
 				console.error('Este departamento não pode ser excluído')
@@ -75,23 +73,18 @@ export function DepartmentsPage() {
 			}
 
 			try {
-				const departmentDocRef = doc(db, 'departments', selectedDepartment)
+				const employees = await getEmployeesByDepartment(selectedDepartment)
 
-				const employeesRef = collection(db, 'employees')
-
-				const employeesQuery = query(
-					employeesRef,
-					where('department', '==', departmentDocRef)
-				)
-
-				const employeeSnapshots = await getDocs(employeesQuery)
-
-				if (!employeeSnapshots.empty) {
-					openConfirmDeleteModal(employeeSnapshots.docs)
+				if (employees.length > 0) {
+					openConfirmDeleteModal(employees)
 					return
 				}
 
-				await deleteDoc(departmentDocRef)
+				await deleteDepartment(selectedDepartment)
+
+				queryClient.invalidateQueries({ queryKey: ['departments'] })
+				queryClient.invalidateQueries({ queryKey: ['employees'] })
+
 				toast.success('Departamento excluído com sucesso')
 			} catch (error) {
 				toast.error('Erro ao excluir departamento')
@@ -102,26 +95,14 @@ export function DepartmentsPage() {
 		}
 	}
 
-	const confirmDeleteDepartment = async () => {
+	async function confirmDeleteDepartment() {
 		try {
-			const departmentDocRef = doc(db, 'departments', selectedDepartment)
-			const newDepartmentDocRef = doc(db, 'departments', 'bwLY5wnNiKoU0qZSeHQl')
+			await deleteDepartmentWithEmployees(
+				selectedDepartment,
+				employeesInDepartment
+			)
 
-			const employeeUpdates = employeesInDepartment.map(employeeDoc => {
-				const employeeUpdate = updateDoc(employeeDoc.ref, {
-					department: newDepartmentDocRef,
-				})
-
-				const departmentUpdate = updateDoc(newDepartmentDocRef, {
-					employees: arrayUnion(employeeDoc.ref),
-				})
-
-				return Promise.all([employeeUpdate, departmentUpdate])
-			})
-
-			await Promise.all(employeeUpdates)
-
-			await deleteDoc(departmentDocRef)
+			queryClient.invalidateQueries({ queryKey: ['departments'] })
 
 			toast.success(
 				'Departamento excluído e funcionários associados atualizados com sucesso'
@@ -156,21 +137,23 @@ export function DepartmentsPage() {
 								<th>Nome</th>
 							</tr>
 						</thead>
-						<tbody>
-							{departments.map(department => (
-								<tr key={department.id}>
-									<td>{department.name}</td>
-									<td className="actions">
-										<Link to={`/departments/${department.id}`}>
-											<MdModeEdit size={24}>Edit</MdModeEdit>
-										</Link>
-										<MdDelete size={24} onClick={() => openDeleteModal(department.id)}>
-											Delete
-										</MdDelete>
-									</td>
-								</tr>
-							))}
-						</tbody>
+						{departments && (
+							<tbody>
+								{departments.map(department => (
+									<tr key={department.id}>
+										<td>{department.name}</td>
+										<td className="actions">
+											<Link to={`/departments/${department.id}`}>
+												<MdModeEdit size={24}>Edit</MdModeEdit>
+											</Link>
+											<MdDelete size={24} onClick={() => openDeleteModal(department.id)}>
+												Delete
+											</MdDelete>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						)}
 					</table>
 				</div>
 			</div>

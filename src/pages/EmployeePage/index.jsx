@@ -1,16 +1,10 @@
 // EmployeeDetailPage.js
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { db } from '../../services/firebase' // Firebase configuration file
-import {
-	doc,
-	getDoc,
-	updateDoc,
-	arrayUnion,
-	arrayRemove,
-} from 'firebase/firestore'
+import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getDepartments } from '../../hooks/useDepartments'
 
 import { Header } from '../../components/Header'
@@ -23,22 +17,14 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import { Loader } from '../../components/Loader'
 import { useAuth } from '../../hooks/useAuth'
+import { getEmployee } from '../../hooks/useEmployees'
 
 export function EmployeePage() {
+	const queryClient = useQueryClient()
+
 	const { employeeId } = useParams()
 
 	const navigate = useNavigate()
-
-	const [employee, setEmployee] = useState(null)
-	const [isEditing, setIsEditing] = useState(false)
-	const [firstName, setFirstName] = useState('')
-	const [lastName, setLastName] = useState('')
-	const [email, setEmail] = useState('')
-	const [cpf, setCpf] = useState('')
-	const [phone, setPhone] = useState('')
-	const [department, setDepartment] = useState('')
-	const [departmentName, setDepartmentName] = useState('')
-	const [role, setRole] = useState('')
 
 	const { data: departments } = useQuery({
 		queryKey: ['departments'],
@@ -46,74 +32,50 @@ export function EmployeePage() {
 		staleTime: 1000 * 60 * 5,
 	})
 
-	const { currentUser, setCurrentUser, logout } = useAuth()
+	const { data: employee } = useQuery({
+		queryKey: ['employee', employeeId],
+		queryFn: () => getEmployee(employeeId),
+		staleTime: 1000 * 60 * 5,
+	})
 
-	useEffect(() => {
-		fetchEmployee()
-		// eslint-disable-next-line
-	}, [])
+	const [isEditing, setIsEditing] = useState(false)
+	const [firstName, setFirstName] = useState(employee?.firstName)
+	const [lastName, setLastName] = useState(employee?.lastName)
+	const [email, setEmail] = useState(employee?.email)
+	const [cpf, setCpf] = useState(employee?.cpf)
+	const [phone, setPhone] = useState(employee?.phone)
+	const [department, setDepartment] = useState(employee?.departmentId)
+	const [role, setRole] = useState(employee?.role)
 
-	const fetchEmployee = async () => {
-		try {
-			const docRef = doc(db, 'employees', employeeId)
-			const docSnap = await getDoc(docRef)
+	const { currentUser, logout } = useAuth()
 
-			if (docSnap.exists()) {
-				const data = docSnap.data()
-				setEmployee(data)
-				// setCurrentUser(data)
-				setFirstName(data.firstName)
-				setLastName(data.lastName)
-				setEmail(data.email)
-				setCpf(data.cpf)
-				setPhone(data.phone)
-				setDepartment(data.department.id)
-				setRole(data.role)
+	async function handleUpdateEmployee(event) {
+		event.preventDefault()
 
-				if (data.department) {
-					const departmentDocRef = data.department
-					const departmentDocSnap = await getDoc(departmentDocRef)
+		const oldDepartmentRef = doc(db, 'departments', employee.departmentId)
 
-					if (departmentDocSnap.exists()) {
-						setDepartmentName(departmentDocSnap.data().name)
-					}
-				}
-			} else {
-				toast.error('Erro ao carregar funcionário')
-				setTimeout(() => {
-					navigate('/employees')
-				}, 5000)
-			}
-		} catch (error) {
-			toast.error('Erro ao carregar funcionário')
-			console.error('Erro ao carregar funcionário: ', error)
-			setTimeout(() => {
-				navigate('/employees')
-			}, 5000)
-		}
-	}
-
-	const handleUpdateEmployee = async e => {
-		e.preventDefault()
-
-		if (
-			!firstName ||
-			!lastName ||
-			!email ||
-			!cpf ||
-			!phone ||
-			!department ||
-			!role
-		) {
-			toast.error('Todos os campos são obrigatórios')
-			return
+		const employeeData = {
+			firstName: firstName || employee.firstName,
+			lastName: lastName || employee.lastName,
+			email: email || employee.email,
+			cpf: cpf || employee.cpf,
+			phone: phone || employee.phone,
+			department: department || employee.departmentId,
+			role: role || employee.role,
 		}
 
-		const isPhoneValid = /^\d+$/.test(phone)
-		const isCpfValid = /^\d+$/.test(cpf)
-		const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+		const newDepartmentRef = doc(db, 'departments', employeeData.department)
 
-		if (!isEmailValid.test(email)) {
+		const newEmployeeData = {
+			...employeeData,
+			department: newDepartmentRef,
+		}
+
+		const isPhoneValid = /^\d+$/.test(newEmployeeData.phone)
+		const isCpfValid = /^\d+$/.test(newEmployeeData.cpf)
+		const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmployeeData.email)
+
+		if (!isEmailValid) {
 			toast.error('Email inválido')
 			return
 		}
@@ -131,43 +93,35 @@ export function EmployeePage() {
 		try {
 			const employeeDocRef = doc(db, 'employees', employeeId)
 
-			const employeeSnap = await getDoc(employeeDocRef)
-			const currentEmployeeData = employeeSnap.data()
-
-			const oldDepartmentRef = currentEmployeeData.department
-
-			const newDepartmentRef = doc(db, 'departments', department)
-
-			await updateDoc(employeeDocRef, {
-				firstName,
-				lastName,
-				email,
-				cpf,
-				phone,
-				department: newDepartmentRef,
-				role,
-			})
+			await updateDoc(employeeDocRef, newEmployeeData)
 
 			await updateDoc(newDepartmentRef, {
 				employees: arrayUnion(employeeDocRef),
 			})
 
-			if (oldDepartmentRef) {
-				await updateDoc(oldDepartmentRef, {
-					employees: arrayRemove(employeeDocRef),
-				})
-			}
+			await updateDoc(oldDepartmentRef, {
+				employees: arrayRemove(employeeDocRef),
+			})
+
+			console.log(employee.departmentId)
+
+			queryClient.invalidateQueries({ queryKey: ['employee', employeeId] })
+			queryClient.invalidateQueries({
+				queryKey: ['department', employee.departmentId],
+			})
+			queryClient.invalidateQueries({
+				queryKey: ['department', department],
+			})
 
 			setIsEditing(false)
 			toast.success('Funcionário atualizado com sucesso!')
-			fetchEmployee()
 		} catch (error) {
 			toast.error('Erro ao atualizar funcionário')
 			console.error('Erro ao atualizar funcionário: ', error)
 		}
 	}
 
-	const handleSignOut = async () => {
+	async function handleSignOut() {
 		await logout()
 		navigate('/')
 	}
@@ -188,7 +142,7 @@ export function EmployeePage() {
 							<input
 								type="text"
 								placeholder="First Name"
-								value={firstName}
+								defaultValue={employee.firstName}
 								onChange={e => setFirstName(e.target.value)}
 								required
 							/>
@@ -198,7 +152,7 @@ export function EmployeePage() {
 							<input
 								type="text"
 								placeholder="Last Name"
-								value={lastName}
+								defaultValue={employee.lastName}
 								onChange={e => setLastName(e.target.value)}
 								required
 							/>
@@ -208,7 +162,7 @@ export function EmployeePage() {
 							<input
 								type="text"
 								placeholder="Email"
-								value={email}
+								defaultValue={employee.email}
 								onChange={e => setEmail(e.target.value)}
 								required
 							/>
@@ -218,7 +172,7 @@ export function EmployeePage() {
 							<input
 								type="text"
 								placeholder="CPF"
-								value={cpf}
+								defaultValue={employee.cpf}
 								onChange={e => setCpf(e.target.value)}
 								required
 							/>
@@ -228,12 +182,13 @@ export function EmployeePage() {
 							<input
 								type="text"
 								placeholder="Phone"
-								value={phone}
+								defaultValue={employee.phone}
 								onChange={e => setPhone(e.target.value)}
 								required
 							/>
 						</label>
 						<select
+							defaultValue=""
 							value={department}
 							onChange={e => setDepartment(e.target.value)}
 							required
@@ -247,7 +202,12 @@ export function EmployeePage() {
 								</option>
 							))}
 						</select>
-						<select value={role} onChange={e => setRole(e.target.value)} required>
+						<select
+							defaultValue=""
+							value={role}
+							onChange={e => setRole(e.target.value)}
+							required
+						>
 							<option value="" disabled>
 								Selecionar Função
 							</option>
@@ -283,7 +243,7 @@ export function EmployeePage() {
 							<strong>Telefone:</strong> {employee.phone}
 						</p>
 						<p>
-							<strong>Departamento:</strong> {departmentName}
+							<strong>Departamento:</strong> {employee.department?.name}
 						</p>
 						<p>
 							<strong>Função:</strong>{' '}

@@ -1,5 +1,3 @@
-import { useEmployees } from '../../hooks/useEmployees.js'
-
 import { useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
@@ -25,8 +23,6 @@ export function AddTaskPage() {
 	const [newDescription, setNewDescription] = useState('')
 	const [newDeadline, setNewDeadline] = useState('')
 	const [newAssign, setNewAssign] = useState('')
-
-	const { employees } = useEmployees()
 
 	const tasksCollectionRef = collection(db, 'tasks')
 
@@ -107,7 +103,6 @@ export function AddTaskPage() {
 					setNewDescription={setNewDescription}
 					setNewDeadline={setNewDeadline}
 					setNewAssign={setNewAssign}
-					employees={employees}
 				/>
 				<Aside addTask={addTask} />
 			</Box>
