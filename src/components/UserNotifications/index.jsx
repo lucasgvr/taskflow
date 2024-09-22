@@ -122,6 +122,7 @@ export function UserNotifications({ userId, departmentId }) {
 						</p>
 						<div className="flex gap-4 mt-4 flex-1">
 							<button
+								type="button"
 								className="px-2 py-2 flex-1 text-zinc-900 border-2 border-zinc-500 rounded hover:opacity-75"
 								onClick={() => markNotificationAsRead(notification.id)}
 								disabled={notification.read}
@@ -129,6 +130,7 @@ export function UserNotifications({ userId, departmentId }) {
 								Marcar como lida
 							</button>
 							<button
+								type="button"
 								className="px-2 py-2 bg-zinc-500 text-zinc-100 rounded hover:opacity-90 flex-1"
 								onClick={() => handleGoToTask(notification.taskId)}
 							>

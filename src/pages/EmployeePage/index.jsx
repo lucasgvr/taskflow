@@ -10,7 +10,9 @@ import {
 	arrayRemove,
 } from 'firebase/firestore'
 
-import { useDepartments } from '../../hooks/useDepartments'
+import { useQuery } from '@tanstack/react-query'
+import { getDepartments } from '../../hooks/useDepartments'
+
 import { Header } from '../../components/Header'
 
 import './styles.scss'
@@ -38,7 +40,12 @@ export function EmployeePage() {
 	const [departmentName, setDepartmentName] = useState('')
 	const [role, setRole] = useState('')
 
-	const { departments } = useDepartments()
+	const { data: departments } = useQuery({
+		queryKey: ['departments'],
+		queryFn: getDepartments,
+		staleTime: 1000 * 60 * 5,
+	})
+
 	const { currentUser, setCurrentUser, logout } = useAuth()
 
 	useEffect(() => {

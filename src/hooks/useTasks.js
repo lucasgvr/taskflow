@@ -1,5 +1,5 @@
 import { db } from '../services/firebase'
-import { collection, getDocs, getDoc } from 'firebase/firestore'
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore'
 
 export async function getTasks() {
 	const collectionRef = collection(db, 'tasks')
@@ -11,6 +11,13 @@ export async function getTasks() {
 	}))
 
 	return tasksArray
+}
+
+export async function getTask(taskId) {
+	const docRef = doc(db, 'tasks', taskId)
+	const docSnap = await getDoc(docRef)
+
+	return { ...docSnap.data(), id: docSnap.id }
 }
 
 export async function fetchAssignDetails(task) {
@@ -58,4 +65,25 @@ export function formatDeadline(task) {
 	const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24))
 
 	return daysDifference > 0 ? `${daysDifference} dias` : 'Atrasada'
+}
+
+export async function getAssignName(taskAssign) {
+	if (taskAssign) {
+		const assignPath = taskAssign.path
+
+		const isEmployee = assignPath.startsWith('employees/')
+		const isDepartment = assignPath.startsWith('departments/')
+
+		if (isEmployee || isDepartment) {
+			const assignDocSnap = await getDoc(taskAssign)
+			if (assignDocSnap.exists()) {
+				const assignData = assignDocSnap.data()
+				return isEmployee
+					? `${assignData.firstName} ${assignData.lastName}`
+					: assignData.name
+			}
+		}
+	} else {
+		return 'Desconhecido'
+	}
 }

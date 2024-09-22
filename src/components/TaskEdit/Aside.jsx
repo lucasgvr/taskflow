@@ -25,6 +25,7 @@ import '../../styles/modal.scss'
 
 import { toast } from 'react-toastify'
 import { useAuth } from '../../hooks/useAuth'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function Aside({
 	updateTask,
@@ -34,36 +35,39 @@ export function Aside({
 	newStatus,
 	newAssign,
 }) {
+	const queryClient = useQueryClient()
+
 	const [deleteTaskModalIsOpen, setDeleteTaskModalIsOpen] = useState(false)
 
 	const { currentUser } = useAuth()
 
 	const navigate = useNavigate()
 
-	const handleDeleteTask = async id => {
+	async function handleDeleteTask(id) {
 		const taskDoc = doc(db, 'tasks', id)
-
-		const notificationsQuery = query(
-			collection(db, 'notifications'),
-			where('taskId', '==', id)
-		)
 
 		try {
 			// Delete the task
 			await deleteDoc(taskDoc)
 
 			// Find and delete the associated notifications
-			const notificationsSnapshot = await getDocs(notificationsQuery)
-			notificationsSnapshot.forEach(async doc => {
-				await deleteDoc(doc.ref) // Delete each notification document
-			})
+			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+
+			const notificationsSnapshot = await getDocs(
+				query(collection(db, 'notifications'), where('taskId', '==', id))
+			)
+
+			for (const doc of notificationsSnapshot.docs) {
+				await deleteDoc(doc.ref)
+			}
 
 			toast.success('Tarefa e notificações apagadas com sucesso!')
 
-			// Navigate back after a delay
+			setDeleteTaskModalIsOpen(false)
+
 			setTimeout(() => {
 				navigate('/home')
-			}, 5000)
+			}, 2500)
 		} catch (error) {
 			toast.error('Erro ao apagar a tarefa ou notificações!')
 			console.error('Error deleting task or notifications:', error)
@@ -98,7 +102,7 @@ export function Aside({
 				fontWeight="600"
 				fontSize="0.875rem"
 				lineHeight="1.625rem"
-			></Text>
+			/>
 			<Box as="div" display="flex" alignItems="center" justifyContent="center">
 				<Box
 					as="button"

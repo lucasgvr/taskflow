@@ -83,7 +83,7 @@ export function AddDepartmentPage() {
 								height="1px"
 								margin="1rem 0 2rem"
 								backgroundColor="#E1E3E5"
-							></Box>
+							/>
 
 							<Box
 								as="div"

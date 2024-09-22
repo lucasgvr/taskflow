@@ -1,13 +1,15 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-import { useDepartments } from '../../hooks/useDepartments'
 import { useEmployees } from '../../hooks/useEmployees'
 
-import { doc, updateDoc, getDoc, collection, addDoc } from 'firebase/firestore'
+import { doc, updateDoc, collection, addDoc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
 import { Button } from '../../components/Button'
+
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { getTask } from '../../hooks/useTasks'
 
 import {
 	Box,
@@ -28,59 +30,47 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useAuth } from '../../hooks/useAuth'
 
 import { DeleteIcon } from '@chakra-ui/icons'
+import { addNote, deleteNote } from '../../hooks/useNotes'
 
 export function TaskEditPage() {
-	const [task, setTask] = useState([])
+	const queryClient = useQueryClient()
 
 	const [newDescription, setNewDescription] = useState('')
 	const [newDeadline, setNewDeadline] = useState('')
 	const [newStatus, setNewStatus] = useState('')
 	const [newAssign, setNewAssign] = useState('')
-	// eslint-disable-next-line
-	const [newNotes, setNewNotes] = useState('')
 	const [newNote, setNewNote] = useState('')
 
 	const params = useParams()
 	const taskId = params.id
 
-	const { departments } = useDepartments()
 	const { employees } = useEmployees()
 	const { currentUser } = useAuth()
 
 	const navigate = useNavigate()
 
-	useEffect(() => {
-		const docRef = doc(db, 'tasks', taskId)
+	const { data: task } = useQuery({
+		queryKey: ['task', taskId],
+		queryFn: () => getTask(taskId),
+		staleTime: 1000 * 60 * 5,
+		enabled: !!taskId,
+	})
 
-		const getTask = async () => {
-			const doc = await getDoc(docRef)
+	if (!task) return null
 
-			setTask({ ...doc.data(), id: doc.id })
-		}
-
-		getTask()
-
-		setNewDescription(task.description)
-		setNewDeadline(task.deadline)
-		setNewStatus(task.status)
-		setNewAssign(task.assign)
-		setNewNotes(task.notes)
-		// eslint-disable-next-line
-	}, [])
-
-	const updateTask = async (
+	async function updateTask(
 		id,
 		newDescription,
 		newDeadline,
 		newStatus,
-		newAssign,
-		updatedNotes
-	) => {
+		newAssign
+	) {
+		console.log(id, newDescription, newDeadline, newStatus, newAssign)
 		const taskDoc = doc(db, 'tasks', id)
 
 		let assignRef
 
-		const deadlineDate = new Date(newDeadline + 'T00:00:00')
+		const deadlineDate = new Date(`${newDeadline}T00:00:00`)
 		const today = new Date()
 		today.setHours(0, 0, 0, 0)
 		deadlineDate.setHours(0, 0, 0, 0)
@@ -101,7 +91,6 @@ export function TaskEditPage() {
 			deadline: newDeadline || task.deadline,
 			status: newStatus || task.status,
 			assign: assignRef || task.assign,
-			notes: updatedNotes || task.notes,
 		}
 
 		const notificationsCollectionRef = collection(db, 'notifications')
@@ -118,44 +107,41 @@ export function TaskEditPage() {
 
 		await updateDoc(taskDoc, newFields)
 
+		queryClient.invalidateQueries({ queryKey: ['tasks'] })
+		queryClient.invalidateQueries({ queryKey: ['task'] })
+
 		toast.success('Tarefa atualizada com sucesso!')
 
 		setTimeout(() => {
 			navigate('/home')
-		}, 5000)
+		}, 2500)
 	}
 
-	const addNote = () => {
+	async function handleAddNote() {
 		if (newNote === '') {
 			toast.error('A anotação não pode estar vazia!')
 			return
 		}
 
-		const createdAt = new Date().toISOString()
+		await addNote(taskId, currentUser, newNote)
 
-		const updatedNotes = [
-			...(task.notes || []),
-			{
-				description: newNote,
-				createdBy: currentUser.firstName + ' ' + currentUser.lastName,
-				createdById: currentUser.id,
-				createdAt: createdAt,
-			},
-		]
-		setTask({ ...task, notes: updatedNotes })
+		queryClient.invalidateQueries({ queryKey: ['task'] })
+
 		toast.success('Anotação adicionada com sucesso!')
 		setNewNote('')
 	}
 
-	const handleDeleteNote = noteIndex => {
-		const updatedNotes = task.notes.filter((_, index) => index !== noteIndex)
-		setTask({ ...task, notes: updatedNotes })
+	async function handleDeleteNote(taskId, noteToDelete) {
+		await deleteNote(taskId, noteToDelete)
+
+		queryClient.invalidateQueries({ queryKey: ['task'] })
+
 		toast.success('Anotação removida com sucesso!')
 	}
 
 	return (
 		<Box as="div" fontWeight="500" color="#FCFDFF" border="none">
-			<Header taskId={taskId} />
+			<Header />
 			<Box
 				as="div"
 				width="min(1440px, 90vw)"
@@ -164,12 +150,11 @@ export function TaskEditPage() {
 				justifyContent="center"
 			>
 				<Main
-					taskId={taskId}
+					task={task}
 					setNewDescription={setNewDescription}
 					setNewDeadline={setNewDeadline}
 					setNewStatus={setNewStatus}
 					setNewAssign={setNewAssign}
-					departments={departments}
 					employees={employees}
 				/>
 				<Aside
@@ -200,30 +185,17 @@ export function TaskEditPage() {
 					value={newNote}
 					onChange={e => setNewNote(e.target.value)}
 				/>
-				<Button onClick={addNote}>Adicionar</Button>
-			</Box>
-			<Box
-				as="div"
-				width="min(900px, 90vw)"
-				margin="-2rem auto 2rem"
-				display="flex"
-				gap="1rem"
-				alignItems="left"
-				justifyContent="left"
-			>
-				<Text color="var(--text-body)">
-					OBS: Não esqueça de salvar a tarefa após adicionar anotações
-				</Text>
+				<Button onClick={handleAddNote}>Adicionar</Button>
 			</Box>
 			<Box as="div" width="min(900px, 90vw)" margin="1rem auto">
 				<Heading size="md" mb="1rem" color="#5A5A66">
 					Anotações
 				</Heading>
 				<VStack spacing={4} align="start" width="100%">
-					{task && task.notes && task.notes.length > 0 ? (
-						task.notes.map((note, index) => (
+					{task?.notes && task.notes.length > 0 ? (
+						task.notes.map(note => (
 							<Box
-								key={index}
+								key={task.notes.indexOf(note)}
 								p={4}
 								width="100%"
 								borderRadius="0.313rem"
@@ -244,9 +216,9 @@ export function TaskEditPage() {
 									{(currentUser.role === 'supervisor' ||
 										currentUser.id === note.createdById) && (
 										<IconButton
-											icon={<DeleteIcon />}
+											icon={<DeleteIcon color="#fff" />}
 											aria-label="Delete Note"
-											onClick={() => handleDeleteNote(index)}
+											onClick={() => handleDeleteNote(task.id, note)}
 											bgColor="var(--orange)"
 											size="sm"
 											transition="0.25s"

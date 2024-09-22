@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom'
 
 import { Box, Text, Input } from '@chakra-ui/react'
 
-import { useDepartments } from '../../hooks/useDepartments'
+import { useQuery } from '@tanstack/react-query'
+import { getDepartments } from '../../hooks/useDepartments'
 
 import { db } from '../../services/firebase'
 import {
@@ -40,7 +41,11 @@ export function AddEmployeePage() {
 	const [formattedCpf, setFormattedCpf] = useState('')
 	const [formattedPhone, setFormattedPhone] = useState('')
 
-	const { departments } = useDepartments()
+	const { data: departments } = useQuery({
+		queryKey: ['departments'],
+		queryFn: getDepartments,
+		staleTime: 1000 * 60 * 5,
+	})
 
 	async function handleAddEmployee(event) {
 		event.preventDefault()
@@ -174,7 +179,7 @@ export function AddEmployeePage() {
 								height="1px"
 								margin="1rem 0 2rem"
 								backgroundColor="#E1E3E5"
-							></Box>
+							/>
 
 							<Box
 								as="div"

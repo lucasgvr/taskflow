@@ -34,7 +34,7 @@ export function Header() {
 						</Heading>
 					</GridItem>
 					<GridItem colSpan={1}>
-						<Box as="p"></Box>
+						<Box as="p" />
 					</GridItem>
 				</Grid>
 			</Box>

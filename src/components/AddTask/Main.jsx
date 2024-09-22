@@ -1,12 +1,19 @@
 import { Box, Text, Input, Select } from '@chakra-ui/react'
+import { useQuery } from '@tanstack/react-query'
+import { getDepartments } from '../../hooks/useDepartments'
 
 export function Main({
 	setNewDescription,
 	setNewDeadline,
 	setNewAssign,
-	departments,
 	employees,
 }) {
+	const { data: departments } = useQuery({
+		queryKey: ['departments'],
+		queryFn: getDepartments,
+		staleTime: 1000 * 60 * 5,
+	})
+
 	return (
 		<Box as="main">
 			<Box as="div">
@@ -25,7 +32,7 @@ export function Main({
 							height="1px"
 							margin="1rem 0 2rem"
 							backgroundColor="#E1E3E5"
-						></Box>
+						/>
 						<Box as="div">
 							<Box as="label" display="inline-block" fontWeight="500" color="#787880">
 								Descrição
@@ -80,11 +87,18 @@ export function Main({
 								>
 									<option value="">Selecionar</option>
 									<optgroup label="Departamentos">
-										{departments.map((dept, index) => (
-											<option key={index} value={`department:${dept.id}`}>
-												{dept.name}
-											</option>
-										))}
+										{departments ? (
+											departments.map((dept, index) => (
+												<option
+													key={departments.indexOf(dept)}
+													value={`department:${dept.id}`}
+												>
+													{dept.name}
+												</option>
+											))
+										) : (
+											<option disabled>Nenhum departamento disponível</option>
+										)}
 									</optgroup>
 									<optgroup label="Funcionários">
 										{employees.map((emp, index) => (

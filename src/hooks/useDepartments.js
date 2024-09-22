@@ -1,27 +1,14 @@
-import { useState, useEffect } from 'react'
-
 import { db } from '../services/firebase'
 import { collection, getDocs } from 'firebase/firestore'
 
-export function useDepartments() {
-	const [departments, setDepartments] = useState([])
+export async function getDepartments() {
+	const collectionRef = collection(db, 'departments')
+	const snapshot = await getDocs(collectionRef)
 
-	const departmentsCollectionRef = collection(db, 'departments')
+	const departmentsArray = snapshot.docs.map(department => ({
+		id: department.id,
+		...department.data(),
+	}))
 
-	useEffect(() => {
-		const getDepartments = async () => {
-			const data = await getDocs(departmentsCollectionRef)
-
-			const departmentsList = data.docs.map(doc => ({ ...doc.data(), id: doc.id }))
-
-			departmentsList.sort((a, b) => a.name.localeCompare(b.name))
-
-			setDepartments(departmentsList)
-		}
-
-		getDepartments()
-		//eslint-disable-next-line
-	}, [departments])
-
-	return { departments, departmentsCollectionRef }
+	return departmentsArray
 }

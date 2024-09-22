@@ -60,10 +60,16 @@ export function CardJob({ task }) {
 	const { data: assignDetails } = useQuery({
 		queryKey: ['assignDetails', task.assign?.path],
 		queryFn: () => fetchAssignDetails(task),
-		staleTime: 1000 * 60,
+		staleTime: 1000 * 60 * 5,
 	})
 
 	const formattedDeadline = formatDeadline(task)
+
+	function handleNavigateToTask(id) {
+		queryClient.invalidateQueries({ queryKey: ['task', id] })
+
+		navigate(`/edit/${id}`)
+	}
 
 	async function handleDeleteTask(id) {
 		const taskDoc = doc(db, 'tasks', id)
@@ -116,7 +122,7 @@ export function CardJob({ task }) {
 				</StatusWrapper>
 			</BoxStatus>
 			<BoxActions>
-				<ButtonAction onClick={() => navigate(`/edit/${task.id}`)}>
+				<ButtonAction onClick={() => handleNavigateToTask(task.id)}>
 					<img src={EditIcon} alt="Icone de editar" />
 				</ButtonAction>
 				{currentUser.role === 'supervisor' && (

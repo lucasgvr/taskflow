@@ -32,7 +32,7 @@ const firebaseConfigBackup2 = {
 	appId: '1:167972829836:web:bf33696df325cf30d619a9',
 }
 
-const app = initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfigBackup2)
 export const auth = getAuth(app)
 
 export const db = getFirestore(app)

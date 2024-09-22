@@ -1,62 +1,43 @@
 import { useState, useEffect } from 'react'
 
-import { doc, getDoc } from 'firebase/firestore'
-import { db } from '../../services/firebase'
-
 import { Box, Text, Input, Select } from '@chakra-ui/react'
 import { useAuth } from '../../hooks/useAuth'
 import { Loader } from '../Loader'
 
+import { getDepartments } from '../../hooks/useDepartments'
+import { useQuery } from '@tanstack/react-query'
+import { getAssignName } from '../../hooks/useTasks'
+
 export function Main({
-	taskId,
+	task,
 	setNewDescription,
 	setNewDeadline,
 	setNewStatus,
 	setNewAssign,
-	departments,
 	employees,
 }) {
-	const [task, setTask] = useState([])
 	const [assignName, setAssignName] = useState('')
 
 	const { currentUser } = useAuth()
 
+	const { data: departments } = useQuery({
+		queryKey: ['departments'],
+		queryFn: getDepartments,
+		staleTime: 1000 * 60 * 5,
+	})
+
 	useEffect(() => {
-		const fetchTaskAndAssignName = async () => {
-			// Fetch task data
-			const taskDocRef = doc(db, 'tasks', taskId)
-			const taskDoc = await getDoc(taskDocRef)
-			const taskData = { ...taskDoc.data(), id: taskDoc.id }
-
-			setTask(taskData)
-
-			// Check if taskData.assign is a Firestore DocumentReference
-			if (taskData.assign) {
-				const assignRef = taskData.assign // This is a Firestore DocumentReference
-				const assignPath = assignRef.path // Extract the path
-
-				const isEmployee = assignPath.startsWith('employees/')
-				const isDepartment = assignPath.startsWith('departments/')
-
-				if (isEmployee || isDepartment) {
-					const assignDocSnap = await getDoc(assignRef) // Use the reference directly to fetch data
-					if (assignDocSnap.exists()) {
-						const assignData = assignDocSnap.data()
-						setAssignName(
-							isEmployee
-								? `${assignData.firstName} ${assignData.lastName}`
-								: assignData.name
-						)
-					}
-				}
+		async function fetchAssignName() {
+			if (task.assign) {
+				const name = await getAssignName(task.assign)
+				setAssignName(name)
 			} else {
 				setAssignName('Desconhecido')
 			}
 		}
 
-		fetchTaskAndAssignName()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [taskId])
+		fetchAssignName()
+	}, [task.assign])
 
 	if (!task) {
 		return <Loader />
@@ -81,7 +62,7 @@ export function Main({
 								height="1px"
 								margin="1rem 0 2rem"
 								backgroundColor="#E1E3E5"
-							></Box>
+							/>
 							<Box as="div">
 								<Box as="label" display="inline-block" fontWeight="500" color="#787880">
 									Descrição
@@ -167,11 +148,18 @@ export function Main({
 								>
 									<option value="">Selecionar</option>
 									<optgroup label="Departamentos">
-										{departments.map((dept, index) => (
-											<option key={index} value={`department:${dept.id}`}>
-												{dept.name}
-											</option>
-										))}
+										{departments ? (
+											departments.map((dept, index) => (
+												<option
+													key={departments.indexOf(dept)}
+													value={`department:${dept.id}`}
+												>
+													{dept.name}
+												</option>
+											))
+										) : (
+											<option disabled>Nenhum departamento disponível</option>
+										)}
 									</optgroup>
 									<optgroup label="Funcionários">
 										{employees.map((emp, index) => (
@@ -200,7 +188,7 @@ export function Main({
 								height="1px"
 								margin="1rem 0 2rem"
 								backgroundColor="#E1E3E5"
-							></Box>
+							/>
 							<Box as="div">
 								<Box as="label" display="inline-block" fontWeight="500" color="#787880">
 									Descrição
@@ -274,7 +262,7 @@ export function Main({
 									width="100%"
 									color="#5A5A66"
 								>
-									{assignName || 'Desconhecido'}
+									{assignName}
 								</Text>
 							</Box>
 						</Box>

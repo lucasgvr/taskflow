@@ -1,5 +1,3 @@
-import { getTasks } from '../../hooks/useTasks.js'
-import { useDepartments } from '../../hooks/useDepartments.js'
 import { useEmployees } from '../../hooks/useEmployees.js'
 
 import { useState } from 'react'
@@ -28,7 +26,6 @@ export function AddTaskPage() {
 	const [newDeadline, setNewDeadline] = useState('')
 	const [newAssign, setNewAssign] = useState('')
 
-	const { departments } = useDepartments()
 	const { employees } = useEmployees()
 
 	const tasksCollectionRef = collection(db, 'tasks')
@@ -110,7 +107,6 @@ export function AddTaskPage() {
 					setNewDescription={setNewDescription}
 					setNewDeadline={setNewDeadline}
 					setNewAssign={setNewAssign}
-					departments={departments}
 					employees={employees}
 				/>
 				<Aside addTask={addTask} />

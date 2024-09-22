@@ -1,5 +1,3 @@
-import { useDepartments } from '../../hooks/useDepartments'
-
 import { Link } from 'react-router-dom'
 
 import { Box, Text } from '@chakra-ui/react'
@@ -30,10 +28,17 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import './styles.scss'
 
+import { useQuery } from '@tanstack/react-query'
+import { getDepartments } from '../../hooks/useDepartments'
+
 export function DepartmentsPage() {
 	Modal.setAppElement('#root')
 
-	const { departments } = useDepartments()
+	const { data: departments } = useQuery({
+		queryKey: ['departments'],
+		queryFn: getDepartments,
+		staleTime: 1000 * 60 * 5,
+	})
 
 	const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false)
 	const [confirmDeleteModalIsOpen, setConfirmDeleteModalIsOpen] = useState(false)
