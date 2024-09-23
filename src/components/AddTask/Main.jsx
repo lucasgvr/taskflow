@@ -1,7 +1,9 @@
-import { Box, Text, Input, Select } from '@chakra-ui/react'
+import { Box, Text, Input } from '@chakra-ui/react'
 import { useQuery } from '@tanstack/react-query'
 import { getDepartments } from '../../hooks/useDepartments'
 import { getEmployees } from '../../hooks/useEmployees'
+import Select from 'react-select'
+import { SelectDropdown } from '../SelectDropdown'
 
 export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
 	const { data: departments } = useQuery({
@@ -15,6 +17,23 @@ export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
 		queryFn: getEmployees,
 		staleTime: 1000 * 60 * 5,
 	})
+
+	const options = [
+		{
+			label: 'Departamentos',
+			options: departments?.map(dept => ({
+				label: dept.name,
+				value: `department:${dept.id}`,
+			})),
+		},
+		{
+			label: 'Funcionários',
+			options: employees?.map(emp => ({
+				label: `${emp.firstName} ${emp.lastName}`,
+				value: `employee:${emp.id}`,
+			})),
+		},
+	]
 
 	return (
 		<Box as="main">
@@ -76,44 +95,7 @@ export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
 								<Box as="label" display="inline-block" fontWeight="500" color="#787880">
 									Atribuir à
 								</Box>
-								<Select
-									fontWeight="500"
-									backgroundColor="#FCFDFF"
-									border="1px solid #E1E3E6"
-									borderRadius="0.313rem"
-									width="100%"
-									color="#5A5A66"
-									onChange={event => {
-										setNewAssign(event.target.value)
-									}}
-								>
-									<option value="">Selecionar</option>
-									<optgroup label="Departamentos">
-										{departments ? (
-											departments.map((dept, index) => (
-												<option
-													key={departments.indexOf(dept)}
-													value={`department:${dept.id}`}
-												>
-													{dept.name}
-												</option>
-											))
-										) : (
-											<option disabled>Nenhum departamento disponível</option>
-										)}
-									</optgroup>
-									<optgroup label="Funcionários">
-										{employees ? (
-											employees.map(emp => (
-												<option key={employees.indexOf(emp)} value={`employee:${emp.id}`}>
-													{emp.firstName} {emp.lastName}
-												</option>
-											))
-										) : (
-											<option disabled>Nenhum funcionário disponível</option>
-										)}
-									</optgroup>
-								</Select>
+								<SelectDropdown options={options} setNewAssign={setNewAssign} />
 							</Box>
 						</Box>
 					</Box>

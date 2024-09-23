@@ -8,6 +8,7 @@ import { getDepartments } from '../../hooks/useDepartments'
 import { useQuery } from '@tanstack/react-query'
 import { getAssignName } from '../../hooks/useTasks'
 import { getEmployees } from '../../hooks/useEmployees'
+import { SelectDropdown } from '../SelectDropdown'
 
 export function Main({
 	task,
@@ -31,6 +32,23 @@ export function Main({
 		queryFn: getEmployees,
 		staleTime: 1000 * 60 * 5,
 	})
+
+	const options = [
+		{
+			label: 'Departamentos',
+			options: departments?.map(dept => ({
+				label: dept.name,
+				value: `department:${dept.id}`,
+			})),
+		},
+		{
+			label: 'Funcionários',
+			options: employees?.map(emp => ({
+				label: `${emp.firstName} ${emp.lastName}`,
+				value: `employee:${emp.id}`,
+			})),
+		},
+	]
 
 	useEffect(() => {
 		async function fetchAssignName() {
@@ -141,7 +159,7 @@ export function Main({
 								<Box as="label" display="inline-block" fontWeight="500" color="#787880">
 									Atribuir à
 								</Box>
-								<Select
+								{/* <Select
 									fontWeight="500"
 									backgroundColor="#FCFDFF"
 									border="1px solid #E1E3E6"
@@ -178,7 +196,8 @@ export function Main({
 											<option disabled>Nenhum funcionário disponível</option>
 										)}
 									</optgroup>
-								</Select>
+								</Select> */}
+								<SelectDropdown options={options} setNewAssign={setNewAssign} />
 							</Box>
 						</Box>
 					</Box>
