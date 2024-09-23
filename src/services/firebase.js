@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 
-//eslint-disable-next-line
 const firebaseConfig = {
 	apiKey: 'AIzaSyBqXMKuC7ng3Qcao_u63iLL2KV1DBT0Bpo',
 	authDomain: 'lucas-taskflow2.firebaseapp.com',
@@ -12,7 +11,6 @@ const firebaseConfig = {
 	appId: '1:697271071295:web:84ce3ee44962f8f29bbe8a',
 }
 
-//eslint-disable-next-line
 const firebaseConfigBackup = {
 	apiKey: 'AIzaSyBBL8LcXmay794nrwNiPHK1e7TjZZUyrFk',
 	authDomain: 'taskflow-da2ee.firebaseapp.com',
@@ -22,7 +20,6 @@ const firebaseConfigBackup = {
 	appId: '1:56611545188:web:70523398d6b612739a7f71',
 }
 
-//eslint-disable-next-line
 const firebaseConfigBackup2 = {
 	apiKey: 'AIzaSyAPxsODMvXc3g3phqleu66Xh5U_NfCi870',
 	authDomain: 'taskflow-2.firebaseapp.com',
@@ -32,7 +29,7 @@ const firebaseConfigBackup2 = {
 	appId: '1:167972829836:web:bf33696df325cf30d619a9',
 }
 
-const app = initializeApp(firebaseConfigBackup2)
+const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
 
 export const db = getFirestore(app)
