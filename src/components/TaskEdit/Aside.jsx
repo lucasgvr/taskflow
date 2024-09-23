@@ -47,11 +47,10 @@ export function Aside({
 		const taskDoc = doc(db, 'tasks', id)
 
 		try {
-			// Delete the task
 			await deleteDoc(taskDoc)
 
-			// Find and delete the associated notifications
 			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 
 			const notificationsSnapshot = await getDocs(
 				query(collection(db, 'notifications'), where('taskId', '==', id))

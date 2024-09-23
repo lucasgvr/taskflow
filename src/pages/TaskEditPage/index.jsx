@@ -122,7 +122,18 @@ export function TaskEditPage() {
 
 		await addNote(taskId, currentUser, newNote)
 
+		const notificationsCollectionRef = collection(db, 'notifications')
+		const notification = {
+			assignId: task.assign,
+			taskId: taskId,
+			message: `Uma anotação foi adicionada à tarefa "${newDescription || task.description}"`,
+			read: false,
+			createdAt: new Date(),
+		}
+		await addDoc(notificationsCollectionRef, notification)
+
 		queryClient.invalidateQueries({ queryKey: ['task'] })
+		queryClient.invalidateQueries({ queryKey: ['notifications'] })
 
 		toast.success('Anotação adicionada com sucesso!')
 		setNewNote('')
@@ -189,41 +200,44 @@ export function TaskEditPage() {
 				</Heading>
 				<VStack spacing={4} align="start" width="100%">
 					{task?.notes && task.notes.length > 0 ? (
-						task.notes.map(note => (
-							<Box
-								key={task.notes.indexOf(note)}
-								p={4}
-								width="100%"
-								borderRadius="0.313rem"
-								border="1px solid #E1E3E6"
-							>
-								<HStack justifyContent="space-between" width="100%">
-									<VStack align="start" width="100%">
-										<Text color="#5A5A66">{note.description}</Text>
-										<Box display="flex" justifyContent="space-between" width="100%">
-											<Text color="#5A5A66" fontSize="sm">
-												Criado por: {note.createdBy}
-											</Text>
-											<Text color="#5A5A66" fontSize="sm">
-												Data de criação: {new Date(note.createdAt).toLocaleString()}
-											</Text>
-										</Box>
-									</VStack>
-									{(currentUser.role === 'supervisor' ||
-										currentUser.id === note.createdById) && (
-										<IconButton
-											icon={<DeleteIcon color="#fff" />}
-											aria-label="Delete Note"
-											onClick={() => handleDeleteNote(task.id, note)}
-											bgColor="var(--orange)"
-											size="sm"
-											transition="0.25s"
-											_hover={{ filter: 'brightness(0.9)' }}
-										/>
-									)}
-								</HStack>
-							</Box>
-						))
+						task.notes
+							.slice()
+							.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+							.map(note => (
+								<Box
+									key={task.notes.indexOf(note)}
+									p={4}
+									width="100%"
+									borderRadius="0.313rem"
+									border="1px solid #E1E3E6"
+								>
+									<HStack justifyContent="space-between" width="100%">
+										<VStack align="start" width="100%">
+											<Text color="#5A5A66">{note.description}</Text>
+											<Box display="flex" justifyContent="space-between" width="100%">
+												<Text color="#5A5A66" fontSize="sm">
+													Criado por: {note.createdBy}
+												</Text>
+												<Text color="#5A5A66" fontSize="sm">
+													Data de criação: {new Date(note.createdAt).toLocaleString()}
+												</Text>
+											</Box>
+										</VStack>
+										{(currentUser.role === 'supervisor' ||
+											currentUser.id === note.createdById) && (
+											<IconButton
+												icon={<DeleteIcon color="#fff" />}
+												aria-label="Delete Note"
+												onClick={() => handleDeleteNote(task.id, note)}
+												bgColor="var(--orange)"
+												size="sm"
+												transition="0.25s"
+												_hover={{ filter: 'brightness(0.9)' }}
+											/>
+										)}
+									</HStack>
+								</Box>
+							))
 					) : (
 						<Text color="#5A5A66">Não há anotações para esta tarefa</Text>
 					)}

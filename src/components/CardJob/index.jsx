@@ -78,6 +78,7 @@ export function CardJob({ task }) {
 			await deleteDoc(taskDoc)
 
 			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 
 			const notificationsSnapshot = await getDocs(
 				query(collection(db, 'notifications'), where('taskId', '==', id))

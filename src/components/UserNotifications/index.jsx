@@ -52,9 +52,9 @@ export function UserNotifications({ userId, departmentId }) {
 						<h1
 							className={`text-l font-bold ${notification.read ? 'text-zinc-500' : 'text-zinc-900'}`}
 						>
-							{notification.message.includes('atualizada')
-								? 'Tarefa atualizada'
-								: 'Tarefa criada'}{' '}
+							{notification.message.includes('criada')
+								? 'Tarefa criada'
+								: 'Tarefa atualizada'}{' '}
 						</h1>
 						<p
 							className={`text-gray-500 line-clamp-2 ${notification.read ? 'text-zinc-400' : 'text-zinc-600'}`}
