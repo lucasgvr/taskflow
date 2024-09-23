@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { db } from '../services/firebase'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, getDoc } from 'firebase/firestore'
 import { toast } from 'react-toastify'
 
 // Create AuthContext
@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true)
 	const navigate = useNavigate()
 
-	// Function to login user
 	const login = async (email, password) => {
 		try {
 			const usersRef = collection(db, 'employees')
@@ -25,12 +24,23 @@ export const AuthProvider = ({ children }) => {
 			const querySnapshot = await getDocs(q)
 
 			if (!querySnapshot.empty) {
-				// User authenticated successfully
 				const userData = querySnapshot.docs[0].data()
-				setCurrentUser({ ...userData, id: querySnapshot.docs[0].id })
+
+				if (userData.department) {
+					const departmentSnapshot = await getDoc(userData.department)
+
+					if (departmentSnapshot.exists()) {
+						const departmentId = departmentSnapshot.id
+						setCurrentUser({
+							...userData,
+							id: querySnapshot.docs[0].id,
+							departmentId,
+						})
+					}
+				}
+
 				navigate('/home')
 			} else {
-				// Invalid credentials
 				toast.error('Email ou senha inválidos')
 				throw new Error('Invalid email or password')
 			}

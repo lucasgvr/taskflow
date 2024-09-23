@@ -62,7 +62,6 @@ export function TaskEditPage() {
 		newStatus,
 		newAssign
 	) {
-		console.log(id, newDescription, newDeadline, newStatus, newAssign)
 		const taskDoc = doc(db, 'tasks', id)
 
 		let assignRef
@@ -106,6 +105,7 @@ export function TaskEditPage() {
 
 		queryClient.invalidateQueries({ queryKey: ['tasks'] })
 		queryClient.invalidateQueries({ queryKey: ['task'] })
+		queryClient.invalidateQueries({ queryKey: ['notifications'] })
 
 		toast.success('Tarefa atualizada com sucesso!')
 

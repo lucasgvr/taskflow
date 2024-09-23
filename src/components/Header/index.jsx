@@ -14,38 +14,25 @@ import { IoMdNotifications } from 'react-icons/io'
 import './styles.scss'
 
 import DefaultImg from '../../assets/default.png'
-import { useEffect } from 'react'
-import { db } from '../../services/firebase'
-import { doc, getDoc } from 'firebase/firestore'
 import { DialogTrigger } from '../Dialog/dialog'
 
+import { useQuery } from '@tanstack/react-query'
+import { getNotifications } from '../../hooks/useNotifications'
+
 export function Header() {
-	const { currentUser, setUser } = useAuth()
+	const { currentUser } = useAuth()
+
+	if (!currentUser) {
+		return <Navigate to="/" replace />
+	}
 
 	const navigate = useNavigate()
 
-	const fetchUserData = async () => {
-		if (currentUser) {
-			const docRef = doc(db, 'employees', currentUser.uid)
-			const docSnap = await getDoc(docRef)
-			if (docSnap.exists()) {
-				const data = docSnap.data()
-				setUser({
-					...currentUser,
-					firstName: data.firstName,
-					lastName: data.lastName,
-					phone: data.phone,
-					password: data.password,
-					role: data.role,
-				})
-			}
-		}
-	}
-
-	useEffect(() => {
-		fetchUserData()
-		//eslint-disable-next-line
-	}, [currentUser])
+	const { data: notifications } = useQuery({
+		queryKey: ['notifications'],
+		queryFn: () => getNotifications(currentUser.id, currentUser.departmentId),
+		staleTime: 1000 * 60 * 5,
+	})
 
 	const navigateToProfile = () => {
 		navigate(`/employees/${currentUser.id}`)
@@ -53,10 +40,6 @@ export function Header() {
 	}
 
 	const location = useLocation()
-
-	if (!currentUser) {
-		return <Navigate to="/" replace />
-	}
 
 	let linkPath
 
@@ -80,16 +63,12 @@ export function Header() {
 							{currentUser.role === 'supervisor' && (
 								<Box className="buttons" display="flex">
 									<Button>
-										<Link
-											to="/employees"
-										>
+										<Link to="/employees">
 											<Text>Funcionários</Text>
 										</Link>
 									</Button>
 									<Button>
-										<Link
-											to="/departments"
-										>
+										<Link to="/departments">
 											<Text>Departamentos</Text>
 										</Link>
 									</Button>
@@ -104,9 +83,11 @@ export function Header() {
 										className="cursor-pointer text-zinc-300 "
 									/>
 								</DialogTrigger>
-								<span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+								{notifications?.some(notification => !notification.read) && (
+									<span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+								)}
 							</div>
-							<button className="profile" onClick={navigateToProfile}>
+							<button type="button" className="profile" onClick={navigateToProfile}>
 								<div>
 									<h2>
 										{currentUser.firstName} {currentUser.lastName}

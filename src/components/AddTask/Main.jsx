@@ -16,8 +16,6 @@ export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
 		staleTime: 1000 * 60 * 5,
 	})
 
-	console.log(employees)
-
 	return (
 		<Box as="main">
 			<Box as="div">

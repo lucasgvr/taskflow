@@ -70,6 +70,7 @@ export function AddTaskPage() {
 			await addDoc(notificationsCollectionRef, notification)
 
 			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
 
 			toast.success('Tarefa adicionada com sucesso!')
 
