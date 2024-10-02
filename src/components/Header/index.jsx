@@ -51,6 +51,10 @@ export function Header() {
 		linkPath = '/home'
 	}
 
+	if (location.pathname.includes('password')) {
+		linkPath = '/home'
+	}
+
 	return (
 		<>
 			<header id="header">

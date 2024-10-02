@@ -1,6 +1,6 @@
 // EmployeeDetailPage.js
 import React, { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { db } from '../../services/firebase' // Firebase configuration file
 import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore'
 
@@ -257,6 +257,14 @@ export function EmployeePage() {
 										Editar
 									</Button>
 									<Button onClick={handleSignOut}>Sair</Button>
+									{currentUser.email === employee.email && (
+										<Link
+											to={`/employees/${employeeId}/change-password`}
+											className="text-orange-400 duration-200 hover:text-orange-500"
+										>
+											Alterar Senha
+										</Link>
+									)}
 								</>
 							)}
 					</div>

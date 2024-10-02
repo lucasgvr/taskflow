@@ -13,6 +13,7 @@ import { DepartmentsPage } from './pages/DepartmentsPage'
 import { AddDepartmentPage } from './pages/AddDepartmentPage'
 import { EmployeePage } from './pages/EmployeePage'
 import { DepartmentPage } from './pages/DepartmentPage'
+import { ChangePasswordPage } from './pages/ChangePasswordPage'
 
 import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from './context/AuthContext'
@@ -48,6 +49,11 @@ function App() {
 							<Route exact path="/employees" element={<EmployeesPage />} />
 							<Route exact path="/employees/new" element={<AddEmployeePage />} />
 							<Route exact path="/employees/:employeeId" element={<EmployeePage />} />
+							<Route
+								exact
+								path="/employees/:employeeId/change-password"
+								element={<ChangePasswordPage />}
+							/>
 
 							<Route exact path="/departments" element={<DepartmentsPage />} />
 							<Route exact path="/departments/new" element={<AddDepartmentPage />} />
