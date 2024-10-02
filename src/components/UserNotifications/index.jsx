@@ -47,7 +47,7 @@ export function UserNotifications({ userId, departmentId }) {
 				.map(notification => (
 					<div
 						key={notification.id}
-						className={`border-2 rounded-xl p-4 min-h-[100px] ${notification.read ? 'border-gray-400 bg-gray-200' : 'border-zinc-500'}`}
+						className={`border-2 rounded-xl p-4 min-h-[100px] ${notification.read ? 'border-zinc-400 bg-zinc-300' : 'border-zinc-500 bg-zinc-50'}`}
 					>
 						<h1
 							className={`text-l font-bold ${notification.read ? 'text-zinc-500' : 'text-zinc-900'}`}

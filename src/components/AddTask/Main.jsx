@@ -91,7 +91,7 @@ export function Main({ setNewDescription, setNewDeadline, setNewAssign }) {
 									}}
 								/>
 							</Box>
-							<Box as="div" ml="1.5rem">
+							<Box as="div" ml="1.5rem" width="20rem">
 								<Box as="label" display="inline-block" fontWeight="500" color="#787880">
 									Atribuir à
 								</Box>
