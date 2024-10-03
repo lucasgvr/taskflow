@@ -15,7 +15,10 @@ import { useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 
 import { Button } from '../../components/Button/index'
+
 import illustrationImg from '../../assets/illustration.svg'
+import arrowImg from '../../assets/arrow.svg'
+
 import './styles.scss'
 
 const APP_URL = import.meta.env.VITE_APP_URL
@@ -91,6 +94,12 @@ export function RequestResetPasswordPage() {
 	return (
 		<div id="pageAuth">
 			<aside>
+				<img
+					src={arrowImg}
+					alt="Back arrow"
+					className="absolute top-4 left-4 cursor-pointer"
+					onClick={() => window.history.back()}
+				/>
 				<img
 					src={illustrationImg}
 					alt="Ilustração simbolizando perguntas e respostas"

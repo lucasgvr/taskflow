@@ -15,7 +15,10 @@ import { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 
 import { Button } from '../../components/Button/index'
+
 import illustrationImg from '../../assets/illustration.svg'
+import arrowImg from '../../assets/arrow.svg'
+
 import './styles.scss'
 
 import { useParams } from 'react-router-dom'
@@ -84,6 +87,12 @@ export function ResetPasswordPage() {
 	return (
 		<div id="pageAuth">
 			<aside>
+				<img
+					src={arrowImg}
+					alt="Back arrow"
+					className="absolute top-4 left-4 cursor-pointer"
+					onClick={() => navigate('/')}
+				/>
 				<img
 					src={illustrationImg}
 					alt="Ilustração simbolizando perguntas e respostas"
