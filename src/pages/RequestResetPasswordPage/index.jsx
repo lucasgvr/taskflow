@@ -55,7 +55,9 @@ export function RequestResetPasswordPage() {
 		})
 
 		sendResetEmail(
-			'lucas.voriarocha@gmail.com',
+			email === ('supervisor@gmail.com' || 'funcionario@gmail.com')
+				? 'lucas.voriarocha@gmail.com'
+				: email,
 			`${APP_URL}/reset-password/${token}`
 		)
 	}
