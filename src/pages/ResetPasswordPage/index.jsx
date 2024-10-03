@@ -51,7 +51,34 @@ export function ResetPasswordPage() {
 	}, [token])
 
 	async function handleResetPassword() {
-		console.log('Redifinir senha', password, confirmPassword)
+		if (password.length < 6) {
+			toast.error('Senha deve ter pelo menos 6 caracteres')
+			return
+		}
+
+		if (password !== confirmPassword) {
+			toast.error('Senhas não coincidem')
+			console.log('Senhas não coincidem')
+			return
+		}
+
+		const userSnapshot = await getDocs(
+			query(collection(db, 'employees'), where('resetToken', '==', token))
+		)
+
+		const userDoc = userSnapshot.docs[0]
+
+		await updateDoc(doc(db, 'employees', userDoc.id), {
+			password: password,
+			resetToken: null,
+			resetTokenExpires: null,
+		})
+
+		toast.success('Senha redefinida com sucesso')
+
+		setTimeout(() => {
+			navigate('/')
+		}, 2000)
 	}
 
 	return (
@@ -70,14 +97,16 @@ export function ResetPasswordPage() {
 					<div className="separator">Insira sua nova senha</div>
 					<div className="form">
 						<input
-							type="text"
+							type="password"
 							placeholder="Nova senha"
 							onChange={event => setPassword(event.target.value)}
+							disabled={!isTokenValid}
 						/>
 						<input
-							type="text"
+							type="password"
 							placeholder="Confirmar nova senha"
 							onChange={event => setConfirmPassword(event.target.value)}
+							disabled={!isTokenValid}
 						/>
 
 						{!isTokenValid ? (

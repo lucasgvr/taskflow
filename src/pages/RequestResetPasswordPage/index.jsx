@@ -12,7 +12,7 @@ import emailjs from 'emailjs-com'
 
 import { useState } from 'react'
 
-import { toast } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 
 import { Button } from '../../components/Button/index'
 import illustrationImg from '../../assets/illustration.svg'
@@ -73,6 +73,7 @@ export function RequestResetPasswordPage() {
 				templateParams,
 				EMAILJS_USER_ID
 			)
+
 			toast.success('Email enviado com sucesso')
 		} catch (error) {
 			toast.error('Erro ao enviar email')
@@ -107,6 +108,19 @@ export function RequestResetPasswordPage() {
 					</div>
 				</div>
 			</main>
+
+			<ToastContainer
+				position="top-center"
+				autoClose={2500}
+				hideProgressBar={false}
+				newestOnTop={true}
+				closeOnClick
+				rtl={false}
+				draggable
+				theme="light"
+				pauseOnFocusLoss={false}
+				pauseOnHover={false}
+			/>
 		</div>
 	)
 }

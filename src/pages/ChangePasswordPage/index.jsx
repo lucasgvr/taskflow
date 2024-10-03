@@ -88,19 +88,19 @@ export function ChangePasswordPage() {
 				</div>
 				<form onSubmit={handleChangePassword} className="flex flex-col w-96 gap-4">
 					<input
-						type="text"
+						type="password"
 						placeholder="Senha atual"
 						className="border-2 border-zinc-300 rounded-md p-2 focus:outline-none"
 						onChange={event => setPassword(event.target.value)}
 					/>
 					<input
-						type="text"
+						type="password"
 						placeholder="Nova senha"
 						className="border-2 border-zinc-300 rounded-md p-2 focus:outline-none"
 						onChange={event => setNewPassword(event.target.value)}
 					/>
 					<input
-						type="text"
+						type="password"
 						placeholder="Confirmar nova senha"
 						className="border-2 border-zinc-300 rounded-md p-2 mb-8 focus:outline-none"
 						onChange={event => setConfirmNewPassword(event.target.value)}
