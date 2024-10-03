@@ -68,17 +68,22 @@ export function RequestResetPasswordPage() {
 			reset_link: resetLink,
 		}
 
-		try {
-			await emailjs.send(
-				EMAILJS_SERVICE_ID,
-				EMAILJS_TEMPLATE_ID,
-				templateParams,
-				EMAILJS_USER_ID
-			)
+		const emailPromise = emailjs.send(
+			EMAILJS_SERVICE_ID,
+			EMAILJS_TEMPLATE_ID,
+			templateParams,
+			EMAILJS_USER_ID
+		)
 
-			toast.success('Email enviado com sucesso')
+		toast.promise(emailPromise, {
+			pending: 'Enviando email...',
+			success: 'Email enviado com sucesso!',
+			error: 'Erro ao enviar email',
+		})
+
+		try {
+			await emailPromise
 		} catch (error) {
-			toast.error('Erro ao enviar email')
 			console.log('Erro ao enviar email', error)
 		}
 	}
