@@ -9,6 +9,8 @@ import logInImg from '../../assets/log-in.svg'
 
 import { useAuth } from '../../hooks/useAuth'
 
+import { Link } from 'react-router-dom'
+
 import { ToastContainer } from 'react-toastify'
 
 import './styles.scss'
@@ -55,6 +57,12 @@ export function LoginPage() {
 								Entrar
 							</Button>
 						</div>
+						<Link
+							to={'/reset-password'}
+							className="text-orange-400 duration-200 hover:text-orange-500 mt-4 text-left"
+						>
+							Esqueceu a senha?
+						</Link>
 					</div>
 				</main>
 			</div>

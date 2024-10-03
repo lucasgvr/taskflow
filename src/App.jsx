@@ -7,13 +7,14 @@ import { ProfilePage } from './pages/ProfilePage'
 import { AddTaskPage } from './pages/AddTaskPage'
 import { CreateAccountPage } from './pages/CreateAccountPage'
 import { EmployeesPage } from './pages/EmployeesPage'
-import { ChoicePage } from './pages/ChoicePage'
 import { AddEmployeePage } from './pages/AddEmployeePage'
 import { DepartmentsPage } from './pages/DepartmentsPage'
 import { AddDepartmentPage } from './pages/AddDepartmentPage'
 import { EmployeePage } from './pages/EmployeePage'
 import { DepartmentPage } from './pages/DepartmentPage'
 import { ChangePasswordPage } from './pages/ChangePasswordPage'
+import { RequestResetPasswordPage } from './pages/RequestResetPasswordPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
 
 import { ToastContainer } from 'react-toastify'
 import { AuthProvider } from './context/AuthContext'
@@ -45,7 +46,6 @@ function App() {
 							<Route exact path="/add" element={<AddTaskPage />} />
 							<Route exact path="/account/create" element={<CreateAccountPage />} />
 
-							<Route exact path="/choose" element={<ChoicePage />} />
 							<Route exact path="/employees" element={<EmployeesPage />} />
 							<Route exact path="/employees/new" element={<AddEmployeePage />} />
 							<Route exact path="/employees/:employeeId" element={<EmployeePage />} />
@@ -53,6 +53,16 @@ function App() {
 								exact
 								path="/employees/:employeeId/change-password"
 								element={<ChangePasswordPage />}
+							/>
+							<Route
+								exact
+								path="/reset-password"
+								element={<RequestResetPasswordPage />}
+							/>
+							<Route
+								exact
+								path="/reset-password/:token"
+								element={<ResetPasswordPage />}
 							/>
 
 							<Route exact path="/departments" element={<DepartmentsPage />} />
