@@ -57,7 +57,12 @@ export function RequestResetPasswordPage() {
 			resetTokenExpires: expirationTime,
 		})
 
-		sendResetEmail(email, `${APP_URL}/reset-password/${token}`)
+		const recipientEmail =
+			email === 'supervisor@gmail.com' || email === 'funcionario@gmail.com'
+				? 'lucas.voriarocha@gmail.com'
+				: email
+
+		sendResetEmail(recipientEmail, `${APP_URL}/reset-password/${token}`)
 	}
 
 	async function sendResetEmail(email, resetLink) {
