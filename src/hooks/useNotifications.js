@@ -49,3 +49,25 @@ export async function markNotificationAsRead(notificationId) {
 		console.error('Erro ao atualizar notificações:', error)
 	}
 }
+
+export async function markAllNotificationsAsRead(userId) {
+	try {
+		const notificationsCollectionRef = collection(db, 'notifications')
+
+		const notificationsQuery = query(
+			notificationsCollectionRef,
+			where('assignId', '==', doc(db, 'employees', userId)),
+			where('read', '==', false)
+		)
+
+		const notificationsSnapshot = await getDocs(notificationsQuery)
+
+		const updatePromises = notificationsSnapshot.docs.map(notificationDoc => {
+			return updateDoc(notificationDoc.ref, { read: true })
+		})
+
+		await Promise.all(updatePromises)
+	} catch (error) {
+		console.error('Erro ao marcar notificações como lidas:', error)
+	}
+}

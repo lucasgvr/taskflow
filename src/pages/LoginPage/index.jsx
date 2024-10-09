@@ -12,10 +12,13 @@ import { useAuth } from '../../hooks/useAuth'
 import { Link } from 'react-router-dom'
 
 import { ToastContainer } from 'react-toastify'
+import { useQueryClient } from '@tanstack/react-query'
 
 import './styles.scss'
 
 export function LoginPage() {
+	const queryClient = useQueryClient()
+
 	const { login, currentUser } = useAuth()
 
 	const [email, setEmail] = useState('')
@@ -23,6 +26,8 @@ export function LoginPage() {
 
 	const handleSignIn = async () => {
 		await login(email, password)
+
+		queryClient.invalidateQueries({ queryKey: ['notifications'] })
 	}
 
 	return (
