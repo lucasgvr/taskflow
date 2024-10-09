@@ -7,7 +7,7 @@ import { addDoc, collection } from 'firebase/firestore'
 import { Box } from '@chakra-ui/react'
 
 import { db } from '../../services/firebase.js'
-import { doc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 
 import { Header } from '../../components/AddTask/Header.jsx'
 import { Main } from '../../components/AddTask/Main.jsx'
@@ -59,15 +59,34 @@ export function AddTaskPage() {
 
 			const notificationsCollectionRef = collection(db, 'notifications')
 
-			const notification = {
-				assignId: assignRef,
-				taskId: taskRef.id,
-				message: `A tarefa "${newDescription}" foi criada`,
-				read: false,
-				createdAt: new Date(),
-			}
+			if (newAssign.includes('department')) {
+				const departmentSnapshot = await getDoc(assignRef)
+				if (departmentSnapshot.exists()) {
+					const departmentData = departmentSnapshot.data()
+					const employeeRefs = departmentData.employees || []
 
-			await addDoc(notificationsCollectionRef, notification)
+					const notificationPromises = employeeRefs.map(async employeeRef => {
+						const notification = {
+							assignId: employeeRef, // Employee reference
+							taskId: taskRef.id,
+							message: `A tarefa "${newDescription}" foi criada`,
+							read: false,
+							createdAt: new Date(),
+						}
+						await addDoc(notificationsCollectionRef, notification)
+					})
+					await Promise.all(notificationPromises)
+				}
+			} else {
+				const notification = {
+					assignId: assignRef,
+					taskId: taskRef.id,
+					message: `A tarefa "${newDescription}" foi criada`,
+					read: false,
+					createdAt: new Date(),
+				}
+				await addDoc(notificationsCollectionRef, notification)
+			}
 
 			queryClient.invalidateQueries({ queryKey: ['tasks'] })
 			queryClient.invalidateQueries({ queryKey: ['notifications'] })

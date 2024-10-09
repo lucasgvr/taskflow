@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 
-import { doc, updateDoc, collection, addDoc } from 'firebase/firestore'
+import { doc, updateDoc, collection, addDoc, getDoc } from 'firebase/firestore'
 import { db } from '../../services/firebase'
 
 import { Button } from '../../components/Button'
@@ -63,7 +63,6 @@ export function TaskEditPage() {
 		newAssign
 	) {
 		const taskDoc = doc(db, 'tasks', id)
-
 		let assignRef
 
 		const deadlineDate = new Date(`${newDeadline}T00:00:00`)
@@ -89,29 +88,54 @@ export function TaskEditPage() {
 			assign: assignRef || task.assign,
 		}
 
-		const notificationsCollectionRef = collection(db, 'notifications')
+		try {
+			const notificationsCollectionRef = collection(db, 'notifications')
 
-		const notification = {
-			assignId: assignRef || task.assign,
-			taskId: id,
-			message: `A tarefa "${newDescription || task.description}" foi atualizada`,
-			read: false,
-			createdAt: new Date(),
+			if (newAssign?.includes('department')) {
+				const departmentSnapshot = await getDoc(assignRef)
+				if (departmentSnapshot.exists()) {
+					const departmentData = departmentSnapshot.data()
+					const employeeRefs = departmentData.employees || [] // Assume 'employees' is an array of references
+
+					const notificationPromises = employeeRefs.map(async employeeRef => {
+						const notification = {
+							assignId: employeeRef,
+							taskId: id,
+							message: `A tarefa "${newDescription || task.description}" foi atualizada`,
+							read: false,
+							createdAt: new Date(),
+						}
+						await addDoc(notificationsCollectionRef, notification)
+					})
+
+					await Promise.all(notificationPromises)
+				}
+			} else {
+				const notification = {
+					assignId: assignRef || task.assign,
+					taskId: id,
+					message: `A tarefa "${newDescription || task.description}" foi atualizada`,
+					read: false,
+					createdAt: new Date(),
+				}
+				await addDoc(notificationsCollectionRef, notification)
+			}
+
+			await updateDoc(taskDoc, newFields)
+
+			queryClient.invalidateQueries({ queryKey: ['tasks'] })
+			queryClient.invalidateQueries({ queryKey: ['task'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
+
+			toast.success('Tarefa atualizada com sucesso!')
+
+			setTimeout(() => {
+				navigate('/home')
+			}, 2500)
+		} catch (error) {
+			console.error('Erro ao atualizar tarefa:', error)
+			toast.error('Ocorreu um erro ao atualizar a tarefa.')
 		}
-
-		await addDoc(notificationsCollectionRef, notification)
-
-		await updateDoc(taskDoc, newFields)
-
-		queryClient.invalidateQueries({ queryKey: ['tasks'] })
-		queryClient.invalidateQueries({ queryKey: ['task'] })
-		queryClient.invalidateQueries({ queryKey: ['notifications'] })
-
-		toast.success('Tarefa atualizada com sucesso!')
-
-		setTimeout(() => {
-			navigate('/home')
-		}, 2500)
 	}
 
 	async function handleAddNote() {
@@ -120,23 +144,50 @@ export function TaskEditPage() {
 			return
 		}
 
-		await addNote(taskId, currentUser, newNote)
+		try {
+			await addNote(taskId, currentUser, newNote)
 
-		const notificationsCollectionRef = collection(db, 'notifications')
-		const notification = {
-			assignId: task.assign,
-			taskId: taskId,
-			message: `Uma anotação foi adicionada à tarefa "${newDescription || task.description}"`,
-			read: false,
-			createdAt: new Date(),
+			const notificationsCollectionRef = collection(db, 'notifications')
+
+			if (task.assign?.path.includes('departments')) {
+				const departmentSnapshot = await getDoc(task.assign)
+				if (departmentSnapshot.exists()) {
+					const departmentData = departmentSnapshot.data()
+					const employeeRefs = departmentData.employees || [] // Assume 'employees' is an array of references
+
+					const notificationPromises = employeeRefs.map(async employeeRef => {
+						const notification = {
+							assignId: employeeRef,
+							taskId: taskId,
+							message: `Uma anotação foi adicionada à tarefa "${task.description}"`,
+							read: false,
+							createdAt: new Date(),
+						}
+						await addDoc(notificationsCollectionRef, notification)
+					})
+
+					await Promise.all(notificationPromises)
+				}
+			} else {
+				const notification = {
+					assignId: task.assign,
+					taskId: taskId,
+					message: `Uma anotação foi adicionada à tarefa "${task.description}"`,
+					read: false,
+					createdAt: new Date(),
+				}
+				await addDoc(notificationsCollectionRef, notification)
+			}
+
+			queryClient.invalidateQueries({ queryKey: ['task'] })
+			queryClient.invalidateQueries({ queryKey: ['notifications'] })
+
+			toast.success('Anotação adicionada com sucesso!')
+			setNewNote('')
+		} catch (error) {
+			console.error('Erro ao adicionar anotação:', error)
+			toast.error('Ocorreu um erro ao adicionar a anotação.')
 		}
-		await addDoc(notificationsCollectionRef, notification)
-
-		queryClient.invalidateQueries({ queryKey: ['task'] })
-		queryClient.invalidateQueries({ queryKey: ['notifications'] })
-
-		toast.success('Anotação adicionada com sucesso!')
-		setNewNote('')
 	}
 
 	async function handleDeleteNote(taskId, noteToDelete) {
