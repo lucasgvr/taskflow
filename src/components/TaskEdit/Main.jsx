@@ -265,17 +265,22 @@ export function Main({
 									>
 										Status
 									</Box>
-									<Text
+									<Select
 										fontWeight="500"
 										backgroundColor="#FCFDFF"
 										border="1px solid #E1E3E6"
 										borderRadius="0.313rem"
-										padding="0.75rem 1.5rem"
 										width="100%"
 										color="#5A5A66"
+										defaultValue={task.status}
+										onChange={event => {
+											setNewStatus(event.target.value)
+										}}
 									>
-										{task.status}
-									</Text>
+										<option value="">Selecionar</option>
+										<option value="Em andamento">Em andamento</option>
+										<option value="Encerrada">Encerrada</option>
+									</Select>
 								</Box>
 							</Box>
 							<Box as="div" mt="1rem">
