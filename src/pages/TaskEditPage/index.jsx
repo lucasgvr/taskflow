@@ -91,6 +91,10 @@ export function TaskEditPage() {
 		try {
 			const notificationsCollectionRef = collection(db, 'notifications')
 
+			console.log(assignRef)
+			console.log(task.assign)
+			console.log(newAssign)
+
 			if (newAssign?.includes('department')) {
 				const departmentSnapshot = await getDoc(assignRef)
 				if (departmentSnapshot.exists()) {
@@ -111,14 +115,35 @@ export function TaskEditPage() {
 					await Promise.all(notificationPromises)
 				}
 			} else {
-				const notification = {
-					assignId: assignRef || task.assign,
-					taskId: id,
-					message: `A tarefa "${newDescription || task.description}" foi atualizada`,
-					read: false,
-					createdAt: new Date(),
+				if (task.assign?.path.includes('departments')) {
+					const departmentSnapshot = await getDoc(task.assign)
+					if (departmentSnapshot.exists()) {
+						const departmentData = departmentSnapshot.data()
+						const employeeRefs = departmentData.employees || [] // Assume 'employees' is an array of references
+
+						const notificationPromises = employeeRefs.map(async employeeRef => {
+							const notification = {
+								assignId: employeeRef,
+								taskId: id,
+								message: `A tarefa "${newDescription || task.description}" foi atualizada`,
+								read: false,
+								createdAt: new Date(),
+							}
+							await addDoc(notificationsCollectionRef, notification)
+						})
+
+						await Promise.all(notificationPromises)
+					}
+				} else {
+					const notification = {
+						assignId: assignRef || task.assign,
+						taskId: id,
+						message: `A tarefa "${newDescription || task.description}" foi atualizada`,
+						read: false,
+						createdAt: new Date(),
+					}
+					await addDoc(notificationsCollectionRef, notification)
 				}
-				await addDoc(notificationsCollectionRef, notification)
 			}
 
 			await updateDoc(taskDoc, newFields)
